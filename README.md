@@ -13,4 +13,4 @@ This is the repo for our IN204 Object Oriented Ray Tracing project
 ## Amélioration de l'outil 
 
 # Project Descripion
-![Here](./projet_informatique_-_oort.pdf)
+[Here](./projet_informatique_-_oort.pdf)
