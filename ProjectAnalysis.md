@@ -14,7 +14,7 @@ Le logiciel devra pouvoir fournir une interface utilisateur lui permettant de ch
 (Moteurs d'exécution?)
 
 ### Interactions 
-Pour la représentation des objets, voir pour utiliser un format de fichier OBJ ![Voir ici](https://fr.wikipedia.org/wiki/Objet_3D_(format_de_fichier)) et pour transférer les données entre machine et logiciel, on nous propose d'utiliser XML. Pour accélérer les calculs, on pourrait faire du multithreading avec MPI et utiliser le GPU avec OpenCL (yes).
+Pour la représentation des objets, voir pour utiliser un format de fichier OBJ [Voir ici](https://fr.wikipedia.org/wiki/Objet_3D_(format_de_fichier)) et pour transférer les données entre machine et logiciel, on nous propose d'utiliser XML. Pour accélérer les calculs, on pourrait faire du multithreading avec MPI et utiliser le GPU avec OpenCL (yes).
 Il faudra réfléchir à l'interaction entre machine et logiciel plus en profondeur (je dois avouer ne pas parfaitement comprendre comment nous allons procéder)
 
 ### Fonctions de test de base 
