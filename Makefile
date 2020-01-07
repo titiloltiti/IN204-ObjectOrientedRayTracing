@@ -1,13 +1,17 @@
 CXX = g++
-CXXFLAGS = -g -Wall -Wextra -Wshadow -ansi -pedantic -std=c++11 -lsfml-graphics -lsfml-window -lsfml-system
-CXXFLAGS2 = -g -Wall -Wextra -Wshadow -ansi -pedantic -std=c++11
+CXXFLAGS = -g -Wall -Wextra -Wshadow -ansi -pedantic -std=c++11 
+LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
+EXEC = main
 
-project: main.o
-	$(CXX) main.o -o exec/main $(CXXFLAGS)
-	rm main.o
+project: $(EXEC).o
+	$(CXX) src/$(EXEC).o -o bin/$(EXEC) $(CXXFLAGS) $(LDLFLAGS)
+	rm src/$(EXEC).o
 
-preprocessing: main.cpp
-	$(CXX) -c main.cpp
+preprocessing: $(EXEC).cpp
+	$(CXX) -c src/$(EXEC).cpp
 
-test: main.cpp
-	$(CXX) $(CXXFLAGS2) main.cpp -o exec/main 
+test: main
+	bin/main
+
+main: src/main.cpp
+	$(CXX) $(CXXFLAGS) src/main.cpp -o bin/main
