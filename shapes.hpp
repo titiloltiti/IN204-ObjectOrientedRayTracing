@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 enum texture {PLAIN,TEXTURE2,TEXTURE3,TEXTURE4};
-enum geometry {CUBE,TRIANGLE,RECTANGLE,SPHERE,PLAN};
+enum geometry {CUBE,TRIANGLE,RECTANGLE,SPHERE,PLAN,UNDEFINED};
 
 struct surface {
     enum texture text; //Texture de la surface
@@ -16,9 +16,20 @@ struct surface {
 };
 
 struct point3D {
-    float p_X;
-    float p_Y;
-    float p_Z;
+    public :
+        float p_X;
+        float p_Y;
+        float p_Z;
+
+        // point3D(const point3D &other) {
+        //     p_X = other.p_X;
+        //     p_Y = other.p_Y;
+        //     p_Z = other.p_Z;
+        // }
+        point3D operator = (const point3D& anotherPoint) const {
+            point3D result(anotherPoint); //Constructeur de recopie par défaut?
+            return result;            
+        };
 };
 
 
@@ -45,9 +56,13 @@ class Object {
     // Constructeur explicite
     explicit Object(struct surface new_surface) {
         self_surface = new_surface;
+        self_geometry = UNDEFINED;
     }
     explicit Object(geometry new_geometry) {
         self_geometry=new_geometry;
+        self_surface.text = PLAIN;
+        self_surface.reflexion=0;
+        self_surface.transparency=0;
     }
     Object(struct surface new_surface, enum geometry new_geometry) : self_surface(new_surface),self_geometry(new_geometry) {};
 
@@ -181,8 +196,8 @@ class Source { //Pour l'instant la source sera omnidirectionnelle
 
 class Ray {
     private : 
-        const struct point3D source_position; //C'est un point 2D sur l'écran (z=0)
-        const struct point3D direction; // C'est un vecteur
+        struct point3D source_position; //C'est un point 2D sur l'écran (z=0)
+        struct point3D direction; // C'est un vecteur
     public : 
         Ray() : source_position{0,0,0},direction{1,1,1} {};
 
