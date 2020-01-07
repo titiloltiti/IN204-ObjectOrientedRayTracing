@@ -1,2 +1,5 @@
 test*
 *.o
+.vscode
+settings.json
+exec/*
