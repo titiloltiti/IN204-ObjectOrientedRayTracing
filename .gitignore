@@ -1,5 +1,4 @@
-test*
 *.o
 .vscode
 bin
-*.test.*
+*.test*
