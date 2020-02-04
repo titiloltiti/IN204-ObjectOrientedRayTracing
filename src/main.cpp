@@ -3,9 +3,10 @@
 #include <iostream>
 #include <stdbool.h>
 #include <SFML/Graphics.hpp>
-#include "shapes.hpp"
+#include "shapes.cpp"
 #include <cstdlib>
 #include <math.h>
+#include <fstream>
 
 // int main()
 // {
@@ -34,32 +35,26 @@
 
 bool rayPlaneIntersection(Ray r, Plan p)
 {
-    float x = abs(p.getNormale().point3D::dotProduct(r.getDirection()));
+    float x = abs(p.getNormale().Point3D::dotProduct(r.getDirection()));
     if (x > 1e-6)
     {
-        point3D y = p.getPoint() - r.getOrigin();
+        Point3D y = p.getPoint() - r.getOrigin();
         float t = y.dotProduct(p.getNormale()) / x;
-        return (t <= 0);
+        return (t >= 0);
     }
     else
         return false;
 }
-int i = 0;
-bool rayIntersectSphere(Ray r, Sphere s)
-{
-    float discr = (2 * (r.getOrigin() - s.getPosition()) * r.getDirection() * 2 * (r.getOrigin() - s.getPosition()) * r.getDirection()) - 4 * (r.getDirection() * r.getDirection()) * ((r.getOrigin() - s.getPosition()) * (r.getOrigin() - s.getPosition()) - s.getRay() * s.getRay());
-    // discr = sqrt(discr);
 
-    if (discr < 0)
-    {
-        // std::cout << "pas intersec" << std::endl;
-        return false;
-    }
-    else
-    {
-        std::cout << ++i << std::endl;
-        return true;
-    }
+bool rayIntersectSphere(Ray ray, Sphere s)
+{
+    Point3D l = ray.getOrigin() - s.getPosition();
+    Point3D d = ray.getDirection();
+    float r = s.getRay();
+
+    float discr = 4 * ((l * d) * (l * d) - (d * d) * (l * l - (r * r)));
+
+    return (discr > 0);
 }
 
 int main()
@@ -70,24 +65,57 @@ int main()
     // all rays start at (0,0,0), their direction is given by the pixel they compute on the screen ( so (x,y,-50) )
     // routine that create all rays
 
-    point3D origin(0, 0, 0);
+    Point3D origin(0, 0, 0);
 
-    point3D normale(0, 0, 1);
-    point3D originPlan(0, 0, -100);
+    Point3D normale(0, 0, 1);
+    Point3D originPlan(0, 0, 500);
+
     // Our background test
     Plan background(normale, originPlan);
 
-    Sphere sphere(50, originPlan);
-    std::cout << sphere.getPosition().getZ() << " " << sphere.getRay() << std::endl;
-    for (int x = -50; x <= 50; x++)
+    Sphere sphere(300, originPlan);
+    Sphere sphere2(100, Point3D(80, 400, 500));
+    // Sphere myObjs[2] = {sphere, sphere2};
+
+    int cameraHeight = 721;
+    int cameraWidth = 1281;
+
+    std::ofstream myImage;
+    myImage.open("image.ppm");
+
+    myImage << "P3\n"
+            << cameraWidth << " " << cameraHeight << "\n255";
+
+    for (int x = cameraHeight / 2; x >= -cameraHeight / 2; x--)
     {
-        for (int y = -50; y <= 50; y++)
+        myImage << "\n";
+        for (int y = -cameraWidth / 2; y <= cameraWidth / 2; y++)
         {
-            point3D dir(x, y, -50);
-            Ray r(origin, dir);
-            // if (!rayPlaneIntersection(r, background))
-            //     std::cout << x << " " << y << std::endl;
-            rayIntersectSphere(r, sphere);
+            Point3D dir(x, y, 50);
+            Ray ray(origin, dir);
+            // if (rayIntersectSphere(ray, sphere))
+            // if (ray.get_Closest_Intersection(myObjs) != origin)
+            if (ray.hit(sphere) != origin || ray.hit(sphere2) != origin)
+
+            {
+                int ir = 255.99;
+                myImage << ir << " " << 0 << " " << 0 << " ";
+                // std::cout << ray.getDirection().getX() << " " << ray.getDirection().getY() << " ";
+                // std::cout << x << " " << y << " ";
+            }
+            else if (rayPlaneIntersection(ray, background))
+            {
+                // float r = float(x) / float(100);
+                // float g = float(y) / float(100);
+                // float b = 0.2;
+                // int ir = int(255.99 * r);
+                // int ig = int(255.99 * g);
+                // int ib = int(255.99 * b);
+                int ib = 255.99;
+                myImage << 0 << " " << 0 << " " << ib << " ";
+            }
         }
     }
+    myImage.close();
+    return 1;
 }

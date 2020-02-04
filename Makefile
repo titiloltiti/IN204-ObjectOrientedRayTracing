@@ -10,11 +10,11 @@ project: $(EXEC).o
 preprocessing: $(EXEC).cpp
 	$(CXX) -c src/$(EXEC).cpp
 
-test: main
-	bin/main
+test: bin/main
+	./bin/main
 
 main: src/main.cpp
-	$(CXX) $(CXXFLAGS) src/main.cpp -o bin/main
+	$(CXX) -fopenmp $(CXXFLAGS) src/main.cpp -o bin/main
 
 sfml: sfml.test.o
 	$(CXX) sfml.test.o -o sfml.test $(CXXFLAGS) $(LDFLAGS)
