@@ -67,11 +67,13 @@ public:
         return p_Z;
     }
 
-    Point3D operator=(const Point3D &anotherPoint) const
+    void operator=(const Point3D &anotherPoint) 
     {
-        Point3D result(anotherPoint); //Constructeur de recopie par défaut?
-        return result;
+        p_X=anotherPoint.p_X;
+        p_Y=anotherPoint.p_Y;
+        p_Z=anotherPoint.p_Z;
     };
+
     bool operator!=(const Point3D &anotherPoint) const
     {
         return (p_X != anotherPoint.getX() || p_Y != anotherPoint.getY() || p_Z != anotherPoint.getZ());
@@ -365,11 +367,15 @@ public:
         {
             Point3D new_inter = hit(*objects_vector);
 
-            if (new_inter != source_position) // Si on hit
+            if (new_inter != source_position) // Si on hit un truc interessant,
             {
-                if (closest_intersection_point == source_position) // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
-                    closest_intersection_point = new_inter;        // Alors c'est sur que c'est lui le plus proche
-                else                                               // Si on a déjà une valeur, on compare
+                if (closest_intersection_point == source_position)
+                { // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
+
+                    closest_intersection_point = new_inter;
+                   
+                }    // Alors c'est sur que c'est lui le plus proche
+                else // Si on a déjà une valeur, on compare
                     closest_intersection_point = closest_intersection_point.min_dist(new_inter, source_position);
             }
             cptr++;

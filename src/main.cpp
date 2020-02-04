@@ -75,7 +75,7 @@ int main()
 
     Sphere sphere(300, originPlan);
     Sphere sphere2(100, Point3D(80, 400, 500));
-    // Sphere myObjs[2] = {sphere, sphere2};
+    Sphere myObjs[2] = {sphere, sphere2};
 
     int cameraHeight = 721;
     int cameraWidth = 1281;
@@ -94,14 +94,26 @@ int main()
             Point3D dir(x, y, 50);
             Ray ray(origin, dir);
             // if (rayIntersectSphere(ray, sphere))
-            // if (ray.get_Closest_Intersection(myObjs) != origin)
-            if (ray.hit(sphere) != origin || ray.hit(sphere2) != origin)
+            Point3D res = ray.get_Closest_Intersection(myObjs);
+            if (res != origin)
+            // Point3D res = ray.get_Closest_Intersection(myObjs);
+
+            // if (ray.hit(sphere) != origin || ray.hit(sphere2) != origin)
 
             {
-                int ir = 255.99;
-                myImage << ir << " " << 0 << " " << 0 << " ";
-                // std::cout << ray.getDirection().getX() << " " << ray.getDirection().getY() << " ";
-                // std::cout << x << " " << y << " ";
+                // Ce test sert juste à distinguer les 2 sphères pour bien voir si on a la premiere devant et l'autre derriere
+                if (res.getZ() < 400)
+                {
+                    int ir = 200;
+                    myImage << ir << " " << 0 << " " << 0 << " ";
+                    //  std::cout << ray.getDirection().getX() << " " << ray.getDirection().getY() << " ";
+                    //  std::cout << x << " " << y << " ";
+                }
+                else
+                {
+                    int ir = 255.99;
+                    myImage << ir << " " << 0 << " " << 0 << " ";
+                }
             }
             else if (rayPlaneIntersection(ray, background))
             {
