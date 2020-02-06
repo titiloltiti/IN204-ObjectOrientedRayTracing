@@ -31,7 +31,7 @@ struct surface
     int colorR;
     int colorG;
     int colorB;
-    float reflexion;    //Coef de reflexion de la structure entre 0 et 1
+    float reflexion;    //Coef de reflexion de la structure (brillance)
     float transparency; //Coef de transp entre 0 et 1
 };
 typedef struct surface surface;
@@ -86,7 +86,7 @@ private:
 
 public:
     Sphere() : Object(), rayon(1), centre{0, 0, 0} {};
-    Sphere(const Sphere &other) : Object(), rayon(other.rayon), centre(other.centre){};
+    Sphere(const Sphere &other) : Object(other.self_surface), rayon(other.rayon), centre(other.centre){};
     explicit Sphere(float r) : Object(), rayon(r), centre{0, 0, 0} {};
     Sphere(float r, Point3D c) : Object(), rayon(r), centre(c){};
     Sphere(surface surf, float r, Point3D c) : Object(surf), rayon(r), centre(c){};
@@ -94,7 +94,16 @@ public:
 
     float getRay() { return rayon; };
     Point3D getPosition() { return centre; };
+
+    void operator=(const Sphere &anotherSphere)
+    {
+        rayon = anotherSphere.rayon;
+        centre = anotherSphere.centre;
+        self_surface = anotherSphere.self_surface;
+    };
+
 };
+
 
 class Plan : public Object
 {

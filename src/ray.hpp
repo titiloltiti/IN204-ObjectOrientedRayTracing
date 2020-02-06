@@ -76,7 +76,7 @@ public:
             return (source_position - d * ((b + sqrt(discr)) / (2 * a))).min_dist(source_position - d * ((b - sqrt(discr)) / (2 * a)), source_position);
     };
 
-    Point3D get_Closest_Intersection(Sphere *objects_vector) // Spheres atm voir pour faire un template
+    Point3D get_Closest_Intersection(Sphere *objects_vector,Sphere *sphere_hit) // Spheres atm voir pour faire un template
     {
         /// Parcourir le vecteur, pour chaque objet on demande sa géométrie pour savoir quelle équation vérifier, une fois qu'on a la géométrie, on peut récupérer la position de l'objet et ses caractéristiques pour résoudre l'équation et stocker dans l'array des intersections le(s) points d'intersection du rayon courant avec les formes.
 
@@ -90,12 +90,17 @@ public:
             {
                 if (closest_intersection_point == source_position)
                 { // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
-
+                    *sphere_hit=*objects_vector;
                     closest_intersection_point = new_inter;
 
                 }    // Alors c'est sur que c'est lui le plus proche
-                else // Si on a déjà une valeur, on compare
-                    closest_intersection_point = closest_intersection_point.min_dist(new_inter, source_position);
+                else {// Si on a déjà une valeur, on compare
+                    Point3D temp = closest_intersection_point.min_dist(new_inter, source_position);
+                    if (temp!= closest_intersection_point) {
+                        *sphere_hit=*objects_vector;
+                        closest_intersection_point=temp;
+                    }
+                }       
             }
             cptr++;
             objects_vector++;
