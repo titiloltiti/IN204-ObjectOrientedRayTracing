@@ -18,6 +18,7 @@ private:
 public:
     Point3D() : p_X(0), p_Y(0), p_Z(0){};
     Point3D(int x, int y, int z) : p_X(x), p_Y(y), p_Z(z){};
+    Point3D(float x, float y, float z) : p_X(x), p_Y(y), p_Z(z){};
     Point3D(const Point3D &point) : p_X(point.getX()), p_Y(point.getY()), p_Z(point.getZ()){};
 
     float getX() const
@@ -66,7 +67,12 @@ public:
     {
         return (p_X * anotherPoint.getX() + p_Y * anotherPoint.getY() + p_Z * anotherPoint.getZ());
     }
-
+    void normalize() {
+        float norm = sqrt(p_X*p_X+p_Y*p_Y+p_Z*p_Z);
+        p_X/=norm;
+        p_Y/=norm;
+        p_Z/=norm;
+    }
     // calcul de distance à l'origine (pour trouver le plus près plus tard) (pour le mmoment l'origine est en (0,0,0) et on considère cela connu.)
     Point3D min_dist(const Point3D &anotherPoint, const Point3D &origin)
     {

@@ -36,24 +36,6 @@ struct surface
 };
 typedef struct surface surface;
 
-// class Vector {
-//     private :
-//         Point3D origin;
-//         Point3D tip;
-//     public :
-//         Vector() : origin(Point3D()), tip(Point3D()) {};
-//         Vector(Point3D m_origin,Point3D m_tip) : origin(m_origin), tip(m_tip) {};
-//         explicit Vector(Point3D m_tip) : origin(Point3D()), tip(m_tip) {};
-//         Vector(const Vector& anotherVector) : origin(anotherVector.origin), tip(anotherVector.origin) {};
-
-//         float norm() {
-//             return sqrt((tip.getX()-origin.getX())*(tip.getX()-origin.getX())+(tip.getY()-origin.getY())*(tip.getY()-origin.getY())+(tip.getZ()-origin.getZ())*(tip.getZ()-origin.getZ()));
-//         };
-
-//         float dotproduct(const Vector& anotherVector) {
-//             return (tip.getX()-origin.getX())*(anotherVector.tip.getX()-anotherVector.origin.getX())+(tip.getY()-origin.getY())*(anotherVector.tip.getY()-anotherVector.origin.getY())   +(tip.getZ()-origin.getZ())*(anotherVector.tip.getZ()-anotherVector.origin.getZ());
-//         };
-// };
 class Object
 {
     // Un objet est défini par une surface et une géométrie
@@ -80,25 +62,20 @@ public:
     {
         self_surface = new_surface;
     }
-    // explicit Object(geometry new_geometry)
-    // {
-    //     self_geometry = new_geometry;
-    // }
-    // Object(surface new_surface, enum geometry new_geometry) : self_surface(new_surface), self_geometry(new_geometry){};
 
     // Recopie
 
     Object(const Object &other)
     {
         self_surface = other.self_surface;
-        // self_geometry = other.self_geometry;
     }
 
     // Destruction
 
-    // ~Object() {
-    //     std::cout << "Destruction de l'objet" << std::endl;
-    // }
+    ~Object()
+    {
+        //     std::cout << "Destruction de l'objet" << std::endl;
+    }
 };
 
 class Sphere : public Object
@@ -112,12 +89,34 @@ public:
     Sphere(const Sphere &other) : Object(), rayon(other.rayon), centre(other.centre){};
     explicit Sphere(float r) : Object(), rayon(r), centre{0, 0, 0} {};
     Sphere(float r, Point3D c) : Object(), rayon(r), centre(c){};
-    // ~Sphere() { std::cout << "Destruction de la sphere";};
+    Sphere(surface surf, float r, Point3D c) : Object(surf), rayon(r), centre(c){};
+    ~Sphere(){/*std::cout << "Destruction de la sphere";*/};
 
     float getRay() { return rayon; };
     Point3D getPosition() { return centre; };
 };
 
+class Plan : public Object
+{
+private:
+    const Point3D normale; // C'est un point 3D par simplicité mais  c'est en réalité pour une normale
+    const Point3D p;
+
+public:
+    Plan() : Object(), normale{1, 1, 1}, p{0, 0, 0} {};
+    Plan(const Plan &otherPlan) : Object(), normale(otherPlan.getNormale()), p(otherPlan.getPoint()){};
+    Plan(Point3D n, Point3D o) : Object(), normale(n), p(o){};
+    Plan(surface surf, Point3D n, Point3D o) : Object(surf), normale(n), p(o){};
+    Point3D getNormale() const
+    {
+        return normale;
+    }
+    Point3D getPoint() const
+    {
+        return p;
+    }
+    // ~Plan() { std::cout << "Destruction du plan";}
+};
 // class Cube : public Object
 // {
 // private:
@@ -169,24 +168,5 @@ public:
 //     Point3D getPosition() { return top; };
 // };
 
-class Plan : public Object
-{
-private:
-    const Point3D normale; // C'est un point 3D par simplicité mais  c'est en réalité pour une normale
-    const Point3D p;
 
-public:
-    Plan() : Object(), normale{1, 1, 1}, p{0, 0, 0} {};
-    Plan(const Plan &otherPlan) : Object(), normale(otherPlan.getNormale()), p(otherPlan.getPoint()){};
-    Plan(Point3D n, Point3D o) : Object(), normale(n), p(o){};
-    Point3D getNormale() const
-    {
-        return normale;
-    }
-    Point3D getPoint() const
-    {
-        return p;
-    }
-    // ~Plan() { std::cout << "Destruction du plan";}
-};
 #endif

@@ -10,22 +10,23 @@
 #include "point3D.hpp"
 
 class Source
-{ //Pour l'instant la source sera omnidirectionnelle
+{ //Pour l'instant la source sera unidirectionnelle (comme le soleil)
 private:
-    Point3D position;
+    Point3D direction;
     Point3D color;
     float intensity; //entre 0 et 1
 public:
-    Source() : position{10, 10, -10}, color{255, 255, 255}, intensity(1){};
+    Source() : direction{-300, 0, -50}, color{255, 255, 255}, intensity(1){ direction.normalize();}; // The default direction is a bit random yet
 
     // Constructeur explicite (on pourrait en mettre d'autres)
-    explicit Source(Point3D pos) : position(pos), color{255, 255, 255}, intensity(1){};
+    explicit Source(Point3D dir) : direction(dir), color{255, 255, 255}, intensity(1){};
+    
 
     // Recopie
 
     Source(const Source &other)
     {
-        position = other.position;
+        direction = other.direction;
         color = other.color;
         intensity = other.intensity;
     }
@@ -41,7 +42,7 @@ public:
     {
         return color;
     };
-    Point3D getPosition() { return position; };
+    Point3D getDirection() { return direction; };
     float getIntensity() { return intensity; };
 };
 
