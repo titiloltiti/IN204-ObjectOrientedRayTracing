@@ -77,8 +77,9 @@ int main()
     Source main_source;
 
     // Plan de fond
-    surface surface_plan = {PLAIN, 10, 10, 10, 0.03, 0.0};
-    Plan background(surface_plan, normale, originPlan);
+    surface surface_plan = {PLAIN, 10, 250, 10, 0.03, 0.0};
+    Point3D backgroundPoint(0,0,3000);
+    Plan background(surface_plan, normale, backgroundPoint);
 
     //Objets de la scène
     surface surface_sphere = {PLAIN, 200, 0, 0, 1.0, 0.0};
@@ -92,7 +93,9 @@ int main()
               << "Sphere 1 : "
               << "Red : " << sphere.getSurfaceProperties().colorR << " Green : " << sphere.getSurfaceProperties().colorG << " Blue : " << sphere.getSurfaceProperties().colorB << "\n"
               << "Sphere 2 : "
-              << "Red : " << sphere2.getSurfaceProperties().colorR << " Green : " << sphere2.getSurfaceProperties().colorG << " Blue : " << sphere2.getSurfaceProperties().colorB << std::endl;
+              << "Red : " << sphere2.getSurfaceProperties().colorR << " Green : " << sphere2.getSurfaceProperties().colorG << " Blue : " << sphere2.getSurfaceProperties().colorB << "\n"
+              << "Background : "
+              << "Red : " << background.getSurfaceProperties().colorR << " Green : " << background.getSurfaceProperties().colorG << " Blue : " << background.getSurfaceProperties().colorB << std::endl;
 
     // Taille de la scène
     int cameraHeight = 721;
@@ -111,32 +114,25 @@ int main()
         {
             Point3D dir(x, y, 50);
             Ray ray(origin, dir);
-            Point3D pointIntersect = ray.get_Closest_Intersection(myObjs);
+            Sphere sphere_hit;
+            Point3D pointIntersect = ray.get_Closest_Intersection(myObjs, &sphere_hit);
+           
+
             Point3D my_pixel(0, 0, 0);
             if (pointIntersect != origin)
             {
-                // Ce test sert juste à distinguer les 2 sphères pour bien voir si on a la premiere devant et l'autre derriere mais il faut virer ca maintenant 
-                if (pointIntersect.getZ() < 400)
-                {
-                    Point3D norm = (pointIntersect - sphere.getPosition());
-                    norm.normalize();
-                    my_pixel = computeLight(sphere, norm, main_source);
-                    myImage
-                        << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
-                }
-                else
-                {
-                    Point3D norm = (pointIntersect - sphere2.getPosition());
-                    norm.normalize();
-                    my_pixel = computeLight(sphere2, norm, main_source);
-                    myImage
-                        << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
-                }
+                // Ce test sert juste à distinguer les 2 sphères pour bien voir si on a la premiere devant et l'autre derriere mais il faut virer ca maintenant
+
+                Point3D norm = (pointIntersect - sphere_hit.getPosition());
+                norm.normalize();
+                my_pixel = computeLight(sphere_hit, norm, main_source);
+                myImage
+                    << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
             }
             else if (rayPlaneIntersection(ray, background))
             {
-
-                myImage << background.getSurfaceProperties().colorR << " " << background.getSurfaceProperties().colorG << " " << background.getSurfaceProperties().colorB << " ";
+                my_pixel = computeLight(background, normale, main_source);
+                myImage << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " "; //WARNING: On n'aaffiche pas les bonnes couleurs ici
             }
         }
     }
