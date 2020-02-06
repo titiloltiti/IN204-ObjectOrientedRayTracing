@@ -3,35 +3,13 @@
 #include <iostream>
 #include <stdbool.h>
 #include <SFML/Graphics.hpp>
-#include "shapes.cpp"
+#include "ray.hpp"
+#include "point3D.hpp"
+#include "objects.hpp"
+#include "source.hpp"
 #include <cstdlib>
 #include <math.h>
 #include <fstream>
-
-// int main()
-// {
-//     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-//     sf::CircleShape shape(100.f);
-//     shape.setFillColor(sf::Color::Green);
-
-//     // Calculations
-
-//     while (window.isOpen())
-//     {
-//         sf::Event event;
-//         while (window.pollEvent(event))
-//         {
-//             if (event.type == sf::Event::Closed)
-//                 window.close();
-//         }
-
-//         window.clear();
-//         window.draw(shape);
-//         window.display();
-//     }
-
-//     return 0;
-// }
 
 bool rayPlaneIntersection(Ray r, Plan p)
 {
