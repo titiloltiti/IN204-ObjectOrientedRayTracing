@@ -31,7 +31,8 @@ struct surface
     int colorR;
     int colorG;
     int colorB;
-    float reflexion;    //Coef de reflexion de la structure (brillance)
+    float shininess;    //Brillance de la surface
+    float reflexion;    //Coef de reflexion de la structureentre 0 et 1
     float transparency; //Coef de transp entre 0 et 1
 };
 typedef struct surface surface;
@@ -42,13 +43,14 @@ class Object
     // Variables
 protected:
     surface self_surface;
-    // enum geometry self_geometry;
+    enum geometry self_geometry;
 
 public:
     // En tete de fonctions et méthodes
-    // enum geometry getGeometry() { return self_geometry; };
+    enum geometry getGeometry() { return self_geometry; };
     surface getSurfaceProperties() { return self_surface; };
-
+    // virtual Point3D getNormale();
+    // virtual Point3D hit(Ray ray);
     // Constructeur par défaut
     Object()
     {
@@ -61,21 +63,18 @@ public:
     explicit Object(surface new_surface)
     {
         self_surface = new_surface;
-    }
+    };
 
     // Recopie
 
     Object(const Object &other)
     {
         self_surface = other.self_surface;
-    }
+    };
 
     // Destruction
 
-    ~Object()
-    {
-        //     std::cout << "Destruction de l'objet" << std::endl;
-    }
+    ~Object(){};
 };
 
 class Sphere : public Object
@@ -85,25 +84,29 @@ private:
     Point3D centre;
 
 public:
-    Sphere() : Object(), rayon(1), centre{0, 0, 0} {};
-    Sphere(const Sphere &other) : Object(other.self_surface), rayon(other.rayon), centre(other.centre){};
-    explicit Sphere(float r) : Object(), rayon(r), centre{0, 0, 0} {};
-    Sphere(float r, Point3D c) : Object(), rayon(r), centre(c){};
+    Sphere() : Object(), rayon(1), centre{0, 0, 0} { self_geometry = SPHERE; }; // Pas très propre pour le moment
+    Sphere(const Sphere &other) : Object(other.self_surface), rayon(other.rayon), centre(other.centre) { self_geometry = SPHERE; };
+    explicit Sphere(float r) : Object(), rayon(r), centre{0, 0, 0} { self_geometry = SPHERE; };
+    Sphere(float r, Point3D c) : Object(), rayon(r), centre(c) { self_geometry = SPHERE; };
     Sphere(surface surf, float r, Point3D c) : Object(surf), rayon(r), centre(c){};
-    ~Sphere(){/*std::cout << "Destruction de la sphere";*/};
+    ~Sphere(){};
 
     float getRay() { return rayon; };
     Point3D getPosition() { return centre; };
 
+    Point3D getNormale(Point3D intersection)
+    {
+        return intersection - centre;
+    }
+
+    // Point3D hit(Ray r);
     void operator=(const Sphere &anotherSphere)
     {
         rayon = anotherSphere.rayon;
         centre = anotherSphere.centre;
         self_surface = anotherSphere.self_surface;
     };
-
 };
-
 
 class Plan : public Object
 {
@@ -112,9 +115,9 @@ private:
     const Point3D p;
 
 public:
-    Plan() : Object(), normale{1, 1, 1}, p{0, 0, 0} {};
-    Plan(const Plan &otherPlan) : Object(), normale(otherPlan.getNormale()), p(otherPlan.getPoint()){};
-    Plan(Point3D n, Point3D o) : Object(), normale(n), p(o){};
+    Plan() : Object(), normale{1, 1, 1}, p{0, 0, 0} { self_geometry = PLAN; };
+    Plan(const Plan &otherPlan) : Object(), normale(otherPlan.getNormale()), p(otherPlan.getPoint()) { self_geometry = PLAN; };
+    Plan(Point3D n, Point3D o) : Object(), normale(n), p(o) { self_geometry = PLAN; };
     Plan(surface surf, Point3D n, Point3D o) : Object(surf), normale(n), p(o){};
     Point3D getNormale() const
     {
@@ -124,7 +127,13 @@ public:
     {
         return p;
     }
-    // ~Plan() { std::cout << "Destruction du plan";}
+    Point3D getNormale(Point3D intersection)
+    {
+        return normale;
+    }
+    // Point3D hit(Ray r);
+
+    ~Plan(){};
 };
 // class Cube : public Object
 // {
@@ -176,6 +185,5 @@ public:
 //     float getArete() { return arete; };
 //     Point3D getPosition() { return top; };
 // };
-
 
 #endif
