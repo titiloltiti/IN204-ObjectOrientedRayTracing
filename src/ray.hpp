@@ -22,10 +22,10 @@ class Ray
 {
 private:
     const Point3D source_position;
-    const Point3D direction; // C'est un vecteur
+    Point3D direction; // C'est un vecteur
 public:
     Ray() : source_position(0, 0, 0), direction(0, 0, 1){};
-    Ray(const Point3D pos, const Point3D dir) : source_position(pos), direction(dir){};
+    Ray(const Point3D pos, Point3D dir) : source_position(pos), direction(dir) { direction.normalize(); };
 
     explicit Ray(const Point3D pos) : source_position(pos)
     {
@@ -53,7 +53,37 @@ public:
         return source_position + direction * t;
     };
 
-    Point3D hit(Object);
+    // Point3D hit(Object *o)
+    // {
+    //     geometry geom = (*o).getGeometry();
+    //     std::cout << o << std::endl;
+    //     switch (geom)
+    //     {
+    //     case PLAN: 
+    //         return hit(dynamic_cast<Plan *>(o));
+    //         break;
+    //     case SPHERE:
+    //         return hit(dynamic_cast<Sphere *>(o));
+    //         break;
+    //     default:
+    //         return source_position;
+    //         break;
+    //      }
+    //  };
+    // Point3D hit(Plan p)
+    // {
+    //     std::cout << "Testing plan " << std::endl;
+    //     Point3D res = source_position;
+    //     float a = (p).getNormale().getX();
+    //     float b = (p).getNormale().getY();
+    //     float c = (p).getNormale().getZ();
+    //     float d = a * (p).getPoint().getX() + b * (p).getPoint().getY() + c * (p).getPoint().getZ(); //Plane is ax+by+cz+d=0
+
+    //     float t = (float)-(a * res.getX() + b * res.getY() + c * res.getZ() + d) / (p).getNormale().dotProduct(direction);
+    //     res = res + direction * t;
+
+    //     return res;
+    // };
     Point3D hit(Sphere s)
     {
         Point3D l = source_position - s.getPosition(); // o - c
@@ -76,7 +106,7 @@ public:
             return (source_position - d * ((b + sqrt(discr)) / (2 * a))).min_dist(source_position - d * ((b - sqrt(discr)) / (2 * a)), source_position);
     };
 
-    Point3D get_Closest_Intersection(Sphere *objects_vector,Sphere *sphere_hit) // Spheres atm voir pour faire un template
+    Point3D get_Closest_Intersection(Sphere *objects_vector, Sphere *sphere_hit /* , int item size, creer une variable globale qui est incrémentée à la construcction (comme en java) si possible */) // Spheres atm voir pour faire un template
     {
         /// Parcourir le vecteur, pour chaque objet on demande sa géométrie pour savoir quelle équation vérifier, une fois qu'on a la géométrie, on peut récupérer la position de l'objet et ses caractéristiques pour résoudre l'équation et stocker dans l'array des intersections le(s) points d'intersection du rayon courant avec les formes.
 
@@ -85,22 +115,23 @@ public:
         while (cptr < 2) //2 Spheres atm
         {
             Point3D new_inter = hit(*objects_vector);
-
             if (new_inter != source_position) // Si on hit un truc interessant,
             {
                 if (closest_intersection_point == source_position)
                 { // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
-                    *sphere_hit=*objects_vector;
+                    *sphere_hit = *objects_vector;
                     closest_intersection_point = new_inter;
 
-                }    // Alors c'est sur que c'est lui le plus proche
-                else {// Si on a déjà une valeur, on compare
+                } // Alors c'est sur que c'est lui le plus proche
+                else
+                { // Si on a déjà une valeur, on compare
                     Point3D temp = closest_intersection_point.min_dist(new_inter, source_position);
-                    if (temp!= closest_intersection_point) {
-                        *sphere_hit=*objects_vector;
-                        closest_intersection_point=temp;
+                    if (temp != closest_intersection_point)
+                    {
+                        *sphere_hit = *objects_vector;
+                        closest_intersection_point = temp;
                     }
-                }       
+                }
             }
             cptr++;
             objects_vector++;

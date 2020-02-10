@@ -13,15 +13,7 @@
 
 bool rayPlaneIntersection(Ray r, Plan p)
 {
-    float x = abs(p.getNormale().Point3D::dotProduct(r.getDirection()));
-    if (x > 1e-6)
-    {
-        Point3D y = p.getPoint() - r.getOrigin();
-        float t = y.dotProduct(p.getNormale()) / x;
-        return (t >= 0);
-    }
-    else
-        return false;
+    return (r.getDirection().dotProduct(p.getNormale())!=0);
 }
 
 bool rayIntersectSphere(Ray ray, Sphere s)
@@ -49,14 +41,15 @@ float checkColorBoundaries(float color)
         return 0;
     return color;
 }
-Point3D computeLight(Object object, Point3D normale, Source source)
+
+Point3D computeLight(Object object, Point3D normale, Point3D reflected, Point3D viewer, Source source)
 {
     // Can add Ambient Lighting and Specular reflexion according to the Phong model
-    float ir = (object.getSurfaceProperties().colorR) * (source.getIntensity() * source.getColor().getX()) * maxi(normale.dotProduct(source.getDirection()), 0.0) / 255.99;
+    float ir = ((object.getSurfaceProperties().colorR) * (source.getIntensity() * source.getColor().getX()) * maxi(-normale.dotProduct(source.getDirection()), 0.0) + 255 * source.getColor().getX() * pow(maxi(-reflected.dotProduct(viewer), 0.0), object.getSurfaceProperties().shininess)) / 255.99;
     ir = checkColorBoundaries(ir);
-    float ig = (object.getSurfaceProperties().colorG) * (source.getIntensity() * source.getColor().getY()) * maxi(normale.dotProduct(source.getDirection()), 0.0) / 255.99;
+    float ig = ((object.getSurfaceProperties().colorG) * (source.getIntensity() * source.getColor().getY()) * maxi(-normale.dotProduct(source.getDirection()), 0.0) + 255 * source.getColor().getY() * pow(maxi(-reflected.dotProduct(viewer), 0.0), object.getSurfaceProperties().shininess)) / 255.99;
     ig = checkColorBoundaries(ig);
-    float ib = (object.getSurfaceProperties().colorB) * (source.getIntensity() * source.getColor().getZ()) * maxi(normale.dotProduct(source.getDirection()), 0.0) / 255.99;
+    float ib = ((object.getSurfaceProperties().colorB) * (source.getIntensity() * source.getColor().getZ()) * maxi(-normale.dotProduct(source.getDirection()), 0.0) + 255 * source.getColor().getZ() * pow(maxi(-reflected.dotProduct(viewer), 0.0), object.getSurfaceProperties().shininess)) / 255.99;
     ib = checkColorBoundaries(ib);
     return Point3D((int)ir, (int)ig, (int)ib);
 } // Toujours des sphères pour le moment mais peut etre qu'on peut simplement remplacer sphere et objet
@@ -70,22 +63,22 @@ int main()
     // routine that create all rays
 
     Point3D origin(0, 0, 0);
-    Point3D normale(0, 0, 1);
-    Point3D originPlan(0, 0, 500); // il s'appelle Origin plan mais c'est le background?
+    Point3D normale(0, 0, -1);
+    Point3D originPlan(0, 0, 500);
 
     // Source(s) de lumière
     Source main_source;
 
     // Plan de fond
-    surface surface_plan = {PLAIN, 10, 250, 10, 0.03, 0.0};
-    Point3D backgroundPoint(0,0,3000);
+    surface surface_plan = {PLAIN, 10, 30, 10, 1, 0.03, 0.0};
+    Point3D backgroundPoint(0, 0, 3000);
     Plan background(surface_plan, normale, backgroundPoint);
 
     //Objets de la scène
-    surface surface_sphere = {PLAIN, 200, 0, 0, 1.0, 0.0};
-    surface surface_sphere2 = {PLAIN, 0, 0, 200, 1.0, 0.0};
+    surface surface_sphere = {PLAIN, 200, 0, 0, 20.0, 1.0, 0.0};
+    surface surface_sphere2 = {PLAIN, 0, 0, 200, 20.0, 1.0, 0.0};
     Sphere sphere(surface_sphere, 300, originPlan);
-    Sphere sphere2(surface_sphere2, 400, Point3D(700, 700, 1000));
+    Sphere sphere2(surface_sphere2, 400, Point3D(-100, -100, 700));
     Sphere myObjs[2] = {sphere, sphere2};
 
     // TEST PART
@@ -114,25 +107,30 @@ int main()
         {
             Point3D dir(x, y, 50);
             Ray ray(origin, dir);
-            Sphere sphere_hit;
+            Sphere sphere_hit; //It's an object
             Point3D pointIntersect = ray.get_Closest_Intersection(myObjs, &sphere_hit);
-           
-
             Point3D my_pixel(0, 0, 0);
-            if (pointIntersect != origin)
+            if (pointIntersect != origin) //Si on hit un objet autre que le fond (le fond n'est pas dans la liste des objets)
             {
-                // Ce test sert juste à distinguer les 2 sphères pour bien voir si on a la premiere devant et l'autre derriere mais il faut virer ca maintenant
-
-                Point3D norm = (pointIntersect - sphere_hit.getPosition());
+                Point3D norm = sphere_hit.getNormale(pointIntersect);
                 norm.normalize();
-                my_pixel = computeLight(sphere_hit, norm, main_source);
+                Point3D viewer = (pointIntersect - origin);
+                viewer.normalize();
+                Point3D reflected = main_source.getDirection() - norm * 2.0 * (main_source.getDirection().dotProduct(norm));
+                reflected.normalize();
+
+                my_pixel = computeLight(sphere_hit, norm, reflected, viewer, main_source);
                 myImage
                     << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
             }
             else if (rayPlaneIntersection(ray, background))
             {
-                my_pixel = computeLight(background, normale, main_source);
-                myImage << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " "; //WARNING: On n'aaffiche pas les bonnes couleurs ici
+                Point3D viewer = Point3D(0, 0, 1); //Pas de brillance sur le background pour le moment
+                viewer.normalize();
+                Point3D reflected = Point3D(0, 1, 0); // Nop
+                reflected.normalize();
+                // my_pixel = computeLight(background, normale, reflected, viewer, main_source);
+                myImage << background.getSurfaceProperties().colorR<< " " << background.getSurfaceProperties().colorG << " " << background.getSurfaceProperties().colorB<< " "; //WARNING: On n'affiche pas les bonnes couleurs ici je pense
             }
         }
     }
