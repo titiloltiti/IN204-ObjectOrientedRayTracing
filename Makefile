@@ -17,8 +17,8 @@ main: src/main.cpp
 	$(CXX) -fopenmp $(CXXFLAGS) src/main.cpp -o bin/main
 
 sfml: src/sfml.test.o
-	$(CXX) src/sfml.test.o -o bin/sfml.test $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) sfml.test.o -o bin/sfml.test $(CXXFLAGS) $(LDFLAGS)
 	rm sfml.test.o
 
-src/sfml.test.o: scr/sfml.test.cpp
+src/sfml.test.o:
 	$(CXX) -c src/sfml.test.cpp
