@@ -16,9 +16,9 @@ test: bin/main
 main: src/main.cpp
 	$(CXX) -fopenmp $(CXXFLAGS) src/main.cpp -o bin/main
 
-sfml: sfml.test.o
-	$(CXX) sfml.test.o -o sfml.test $(CXXFLAGS) $(LDFLAGS)
+sfml: src/sfml.test.o
+	$(CXX) src/sfml.test.o -o bin/sfml.test $(CXXFLAGS) $(LDFLAGS)
 	rm sfml.test.o
 
-sfml.test.cpp:
-	$(CXX) -c sfml.test.cpp
+src/sfml.test.o: scr/sfml.test.cpp
+	$(CXX) -c src/sfml.test.cpp

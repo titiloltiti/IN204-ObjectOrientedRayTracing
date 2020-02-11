@@ -3,10 +3,10 @@
 #include <iostream>
 #include <stdbool.h>
 #include <SFML/Graphics.hpp>
-#include "include/ray.hpp"
-#include "include/point3D.hpp"
-#include "include/objects.hpp"
-#include "include/source.hpp"
+#include "../include/ray.hpp"
+#include "../include/point3D.hpp"
+#include "../include/objects.hpp"
+#include "../include/source.hpp"
 #include <cstdlib>
 #include <math.h>
 #include <fstream>
@@ -99,7 +99,7 @@ int main()
     int cameraWidth = 1281;
 
     std::ofstream myImage;
-    myImage.open("image.ppm");
+    myImage.open("result/image.ppm");
 
     myImage << "P3\n"
             << cameraWidth << " " << cameraHeight << "\n255";
