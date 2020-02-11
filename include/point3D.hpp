@@ -34,6 +34,11 @@ public:
         return p_Z;
     }
 
+    void print()
+    {
+        std::cout << p_X << " " << p_Y << " " << p_Z << std::endl;
+    }
+
     void operator=(const Point3D &anotherPoint)
     {
         p_X = anotherPoint.p_X;
@@ -45,33 +50,45 @@ public:
     {
         return (p_X != anotherPoint.getX() || p_Y != anotherPoint.getY() || p_Z != anotherPoint.getZ());
     }
+
     bool operator==(const Point3D &anotherPoint) const
     {
         return (p_X == anotherPoint.getX() && p_Y == anotherPoint.getY() && p_Z == anotherPoint.getZ());
     }
-    Point3D operator*(float t) const;
-    friend Point3D operator*(float t, const Point3D point);
+
+    Point3D operator*(float t) const
+    {
+        return Point3D(p_X * t, p_Y * t, p_Z * t);
+    };
+
+    friend Point3D operator*(float t, const Point3D &point);
+
     float operator*(const Point3D &anotherPoint) const
     {
         return (p_X * anotherPoint.getX() + p_Y * anotherPoint.getY() + p_Z * anotherPoint.getZ());
     }
+
     Point3D operator+(const Point3D &point) const
     {
         return Point3D(p_X + point.getX(), p_Y + point.getY(), p_Z + point.getZ());
     }
+
     Point3D operator-(const Point3D &point) const
     {
         return Point3D(p_X - point.getX(), p_Y - point.getY(), p_Z - point.getZ());
     }
-    float dotProduct(const Point3D anotherPoint) const
+
+    float dotProduct(const Point3D &anotherPoint) const
     {
         return (p_X * anotherPoint.getX() + p_Y * anotherPoint.getY() + p_Z * anotherPoint.getZ());
     }
-    void normalize() {
-        float norm = sqrt(p_X*p_X+p_Y*p_Y+p_Z*p_Z);
-        p_X/=norm;
-        p_Y/=norm;
-        p_Z/=norm;
+
+    void normalize()
+    {
+        float norm = sqrt(p_X * p_X + p_Y * p_Y + p_Z * p_Z);
+        p_X /= norm;
+        p_Y /= norm;
+        p_Z /= norm;
     }
     // calcul de distance à l'origine (pour trouver le plus près plus tard) (pour le mmoment l'origine est en (0,0,0) et on considère cela connu.)
     Point3D min_dist(const Point3D &anotherPoint, const Point3D &origin)
@@ -84,11 +101,8 @@ public:
             return anotherPoint;
     }
 };
-Point3D Point3D::operator*(float t) const
-{
-    return Point3D(p_X * t, p_Y * t, p_Z * t);
-}
-Point3D operator*(float t, const Point3D point)
+
+Point3D operator*(float t, const Point3D &point)
 {
     return Point3D(point.getX() * t, point.getY() * t, point.getZ() * t);
 }

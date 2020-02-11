@@ -19,7 +19,7 @@ public:
     Source() : direction{500, -500, 500}, color{255, 255, 255}, intensity(1) { direction.normalize(); }; // The default direction is a bit random yet
 
     // Constructeur explicite (on pourrait en mettre d'autres)
-    explicit Source(Point3D dir) : direction(dir), color{255, 255, 255}, intensity(1){};
+    explicit Source(const Point3D &dir) : direction(dir), color{255, 255, 255}, intensity(1){};
 
     // Recopie
 
@@ -37,12 +37,18 @@ public:
         // std::cout << "Destruction de la source" << std::endl;
     }
 
-    Point3D getColor()
+    Point3D getColor() const
     {
         return color;
     };
-    Point3D getDirection() { return direction; };
-    float getIntensity() { return intensity; };
+    Point3D getDirection() const
+    {
+        return direction;
+    };
+    float getIntensity() const
+    {
+        return intensity;
+    };
 };
 
 #endif

@@ -5,7 +5,7 @@ EXEC = main
 
 all : project
 
-project: bin/$(EXEC)
+project: executable
 	@echo "Executing binary..."
 	./bin/main
 	display result/image.ppm
