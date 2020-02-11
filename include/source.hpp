@@ -16,11 +16,10 @@ private:
     Point3D color;
     float intensity; //entre 0 et 1
 public:
-    Source() : direction{500, -500, 500}, color{255, 255, 255}, intensity(1){ direction.normalize();}; // The default direction is a bit random yet
+    Source() : direction{500, -500, 500}, color{255, 255, 255}, intensity(1) { direction.normalize(); }; // The default direction is a bit random yet
 
     // Constructeur explicite (on pourrait en mettre d'autres)
     explicit Source(Point3D dir) : direction(dir), color{255, 255, 255}, intensity(1){};
-    
 
     // Recopie
 

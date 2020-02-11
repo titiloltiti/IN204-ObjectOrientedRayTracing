@@ -3,10 +3,10 @@
 #include <iostream>
 #include <stdbool.h>
 #include <SFML/Graphics.hpp>
-#include "ray.hpp"
-#include "point3D.hpp"
-#include "objects.hpp"
-#include "source.hpp"
+#include "include/ray.hpp"
+#include "include/point3D.hpp"
+#include "include/objects.hpp"
+#include "include/source.hpp"
 #include <cstdlib>
 #include <math.h>
 #include <fstream>
