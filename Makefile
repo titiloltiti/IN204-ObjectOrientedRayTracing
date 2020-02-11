@@ -10,11 +10,13 @@ project: bin/$(EXEC)
 	./bin/main
 	display result/image.ppm
 
-.PHONY: all project
-
 executable: src/$(EXEC).cpp
 	@echo "Compiling the project..."
 	$(CXX) -fopenmp $(CXXFLAGS) src/$(EXEC).cpp -o bin/$(EXEC)
+
+clean: 
+	rm result/*.ppm
+	rm bin/*
 
 preprocessing: $(EXEC).cpp
 	$(CXX) -c src/$(EXEC).cpp
