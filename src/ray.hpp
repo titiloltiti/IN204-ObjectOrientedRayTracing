@@ -10,6 +10,7 @@
 #include "point3D.hpp"
 #include "objects.hpp"
 #include "source.hpp"
+#include <list>
 
 #ifndef NO_HIT
 #define NO_HIT  \
@@ -59,7 +60,7 @@ public:
     //     std::cout << o << std::endl;
     //     switch (geom)
     //     {
-    //     case PLAN: 
+    //     case PLAN:
     //         return hit(dynamic_cast<Plan *>(o));
     //         break;
     //     case SPHERE:
@@ -84,42 +85,21 @@ public:
 
     //     return res;
     // };
-    Point3D hit(Sphere s)
-    {
-        Point3D l = source_position - s.getPosition(); // o - c
-        Point3D d = direction;
-        float r = s.getRay();
 
-        float b = 2 * (l * d);
-        float a = d * d;
-        float c = l * l - r * r;
-
-        float discr = b * b - 4 * a * c;
-
-        if (discr < 0)
-        {
-            return Point3D(0, 0, 0);
-        }
-        if (discr == 0)
-            return source_position - d * (b / (2 * a));
-        else
-            return (source_position - d * ((b + sqrt(discr)) / (2 * a))).min_dist(source_position - d * ((b - sqrt(discr)) / (2 * a)), source_position);
-    };
-
-    Point3D get_Closest_Intersection(Sphere *objects_vector, Sphere *sphere_hit /* , int item size, creer une variable globale qui est incrémentée à la construcction (comme en java) si possible */) // Spheres atm voir pour faire un template
+    Point3D get_Closest_Intersection(std::list<Object *> objects_vector, Object *sphere_hit, Point3D *norm_at_hitpoint/* , int item size, creer une variable globale qui est incrémentée à la construcction (comme en java) si possible */) // Spheres atm voir pour faire un template
     {
         /// Parcourir le vecteur, pour chaque objet on demande sa géométrie pour savoir quelle équation vérifier, une fois qu'on a la géométrie, on peut récupérer la position de l'objet et ses caractéristiques pour résoudre l'équation et stocker dans l'array des intersections le(s) points d'intersection du rayon courant avec les formes.
-
         Point3D closest_intersection_point(0, 0, 0);
-        int cptr = 0;
-        while (cptr < 2) //2 Spheres atm
+        std::list<Object*>::iterator it = objects_vector.begin();
+        while (it != objects_vector.end()) 
         {
-            Point3D new_inter = hit(*objects_vector);
+            Point3D new_inter = (*it)->hit(source_position,direction);
             if (new_inter != source_position) // Si on hit un truc interessant,
             {
                 if (closest_intersection_point == source_position)
                 { // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
-                    *sphere_hit = *objects_vector;
+                    *sphere_hit = *(*it);
+                    *norm_at_hitpoint = (*it)->getNormale(new_inter);
                     closest_intersection_point = new_inter;
 
                 } // Alors c'est sur que c'est lui le plus proche
@@ -128,13 +108,14 @@ public:
                     Point3D temp = closest_intersection_point.min_dist(new_inter, source_position);
                     if (temp != closest_intersection_point)
                     {
-                        *sphere_hit = *objects_vector;
+                        *sphere_hit = *(*it);
+                        *norm_at_hitpoint = (*it)->getNormale(temp);
                         closest_intersection_point = temp;
                     }
                 }
             }
-            cptr++;
-            objects_vector++;
+            std::advance(it,1);
+
         }
         return closest_intersection_point;
     }
