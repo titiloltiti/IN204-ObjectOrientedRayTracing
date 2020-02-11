@@ -1,8 +1,4 @@
 *.o
 .vscode/
-bin/
-!bin/.gitkeep
-result/
-!result/.gitkeep
 *.test*
 *.ppm
