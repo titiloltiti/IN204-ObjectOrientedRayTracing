@@ -89,7 +89,7 @@ public:
     Point3D get_Closest_Intersection(std::list<Object *> objects_vector, Object *sphere_hit, Point3D *norm_at_hitpoint/* , int item size, creer une variable globale qui est incrémentée à la construcction (comme en java) si possible */) // Spheres atm voir pour faire un template
     {
         /// Parcourir le vecteur, pour chaque objet on demande sa géométrie pour savoir quelle équation vérifier, une fois qu'on a la géométrie, on peut récupérer la position de l'objet et ses caractéristiques pour résoudre l'équation et stocker dans l'array des intersections le(s) points d'intersection du rayon courant avec les formes.
-        Point3D closest_intersection_point(0, 0, 0);
+        Point3D closest_intersection_point = source_position;
         std::list<Object*>::iterator it = objects_vector.begin();
         while (it != objects_vector.end()) 
         {
