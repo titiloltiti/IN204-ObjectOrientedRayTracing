@@ -10,22 +10,22 @@
 #include <cstdlib>
 #include <math.h>
 #include <fstream>
+#include <list>
+// bool rayPlaneIntersection(Ray r, Plan p)
+// {
+//     return (r.getDirection().dotProduct(p.getNormale()) != 0);
+// }
 
-bool rayPlaneIntersection(Ray r, Plan p)
-{
-    return (r.getDirection().dotProduct(p.getNormale())!=0);
-}
+// bool rayIntersectSphere(Ray ray, Sphere s)
+// {
+//     Point3D l = ray.getOrigin() - s.getPosition();
+//     Point3D d = ray.getDirection();
+//     float r = s.getRay();
 
-bool rayIntersectSphere(Ray ray, Sphere s)
-{
-    Point3D l = ray.getOrigin() - s.getPosition();
-    Point3D d = ray.getDirection();
-    float r = s.getRay();
+//     float discr = 4 * ((l * d) * (l * d) - (d * d) * (l * l - (r * r)));
 
-    float discr = 4 * ((l * d) * (l * d) - (d * d) * (l * l - (r * r)));
-
-    return (discr > 0);
-}
+//     return (discr > 0);
+// }
 
 float maxi(float a, float b)
 {
@@ -70,7 +70,7 @@ int main()
     Source main_source;
 
     // Plan de fond
-    surface surface_plan = {PLAIN, 10, 30, 10, 1, 0.03, 0.0};
+    surface surface_plan = {PLAIN, 10, 30, 10, 1000, 0.03, 0.0};
     Point3D backgroundPoint(0, 0, 3000);
     Plan background(surface_plan, normale, backgroundPoint);
 
@@ -79,7 +79,11 @@ int main()
     surface surface_sphere2 = {PLAIN, 0, 0, 200, 20.0, 1.0, 0.0};
     Sphere sphere(surface_sphere, 300, originPlan);
     Sphere sphere2(surface_sphere2, 400, Point3D(-100, -100, 700));
-    Sphere myObjs[2] = {sphere, sphere2};
+
+    std::list<Object *> myObjs;
+    myObjs.push_back(&sphere);
+    myObjs.push_back(&sphere2);
+    myObjs.push_back(&background);
 
     // TEST PART
     std::cout << "Scene propeties : \n"
@@ -107,31 +111,29 @@ int main()
         {
             Point3D dir(x, y, 50);
             Ray ray(origin, dir);
-            Sphere sphere_hit; //It's an object
-            Point3D pointIntersect = ray.get_Closest_Intersection(myObjs, &sphere_hit);
+            Object sphere_hit; //It's an object
+            Point3D norm_at_hitpoint;
+            Point3D pointIntersect = ray.get_Closest_Intersection(myObjs, &sphere_hit, &norm_at_hitpoint);
             Point3D my_pixel(0, 0, 0);
-            if (pointIntersect != origin) //Si on hit un objet autre que le fond (le fond n'est pas dans la liste des objets)
-            {
-                Point3D norm = sphere_hit.getNormale(pointIntersect);
-                norm.normalize();
-                Point3D viewer = (pointIntersect - origin);
-                viewer.normalize();
-                Point3D reflected = main_source.getDirection() - norm * 2.0 * (main_source.getDirection().dotProduct(norm));
-                reflected.normalize();
+            norm_at_hitpoint.normalize();
+            Point3D viewer = (pointIntersect - origin);
+            viewer.normalize();
+            Point3D reflected = main_source.getDirection() - norm_at_hitpoint * 2.0 * (main_source.getDirection().dotProduct(norm_at_hitpoint));
+            reflected.normalize();
 
-                my_pixel = computeLight(sphere_hit, norm, reflected, viewer, main_source);
-                myImage
-                    << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
-            }
-            else if (rayPlaneIntersection(ray, background))
-            {
-                Point3D viewer = Point3D(0, 0, 1); //Pas de brillance sur le background pour le moment
-                viewer.normalize();
-                Point3D reflected = Point3D(0, 1, 0); // Nop
-                reflected.normalize();
-                // my_pixel = computeLight(background, normale, reflected, viewer, main_source);
-                myImage << background.getSurfaceProperties().colorR<< " " << background.getSurfaceProperties().colorG << " " << background.getSurfaceProperties().colorB<< " "; //WARNING: On n'affiche pas les bonnes couleurs ici je pense
-            }
+            my_pixel = computeLight(sphere_hit, norm_at_hitpoint, reflected, viewer, main_source);
+            myImage
+                << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
+
+            // else if (rayPlaneIntersection(ray, background))
+            // {
+            //     Point3D viewer = Point3D(0, 0, 1); //Pas de brillance sur le background pour le moment
+            //     viewer.normalize();
+            //     Point3D reflected = Point3D(0, 1, 0); // Nop
+            //     reflected.normalize();
+            //     // my_pixel = computeLight(background, normale, reflected, viewer, main_source);
+            //     myImage << background.getSurfaceProperties().colorR << " " << background.getSurfaceProperties().colorG << " " << background.getSurfaceProperties().colorB << " "; //WARNING: On n'affiche pas les bonnes couleurs ici je pense
+            // }
         }
     }
     myImage.close();
