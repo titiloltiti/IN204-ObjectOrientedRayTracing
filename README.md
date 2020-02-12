@@ -1,6 +1,6 @@
 # IN204-ObjectOrientedRayTracing
 
-![View](https://github.com/titiloltiti/IN204-ObjectOrientedRayTracing/blob/master/doc/image.ppm "View rendered with this Ray Tracing engine")
+![View](https://github.com/titiloltiti/IN204-ObjectOrientedRayTracing/blob/master/doc/image.png "View rendered with this Ray Tracing engine")
 
 This is the repository for our IN204 Object Oriented Ray Tracing project.
 
