@@ -8,7 +8,7 @@ all : project
 project: executable
 	@echo "Executing binary..."
 	./bin/main
-	display result/image.ppm
+	display result/image.ppm &
 
 executable: src/$(EXEC).cpp
 	@echo "Compiling the project..."
