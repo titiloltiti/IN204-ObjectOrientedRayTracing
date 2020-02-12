@@ -69,32 +69,53 @@ Point3D computeLight(Object object, Point3D norm, Point3D reflected, Point3D vie
     return Point3D((int)ir, (int)ig, (int)ib);
 } // Toujours des sphères pour le moment mais peut etre qu'on peut simplement remplacer sphere et objet
 
-Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector)
+Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector, int counter)
 {
+    switch (counter)
+    {
+    case 3: //Ray Depth of 3 
+        return global_ambient_intensity;
+        break;
+    default:
+        //Color of Object calculation
+        Object sphere_hit; // It's actually an object
+        Point3D norm_at_hitpoint;
+        Point3D pointIntersect = ray.get_Closest_Intersection(objects_vector, &sphere_hit, &norm_at_hitpoint);
 
-    Object sphere_hit; //It's an object
-    Point3D norm_at_hitpoint;
-    Point3D pointIntersect = ray.get_Closest_Intersection(objects_vector, &sphere_hit, &norm_at_hitpoint);
+        if (pointIntersect == ray.getOrigin()) //If we don't hit anything, we hit the background
+            return Point3D(background.getSurfaceProperties().colorR, background.getSurfaceProperties().colorG, background.getSurfaceProperties().colorB);
 
-    if (pointIntersect == ray.getOrigin())
-        return Point3D(background.getSurfaceProperties().colorR, background.getSurfaceProperties().colorG, background.getSurfaceProperties().colorB);
+        norm_at_hitpoint.normalize();
+        Point3D viewer = (pointIntersect - origin);
+        viewer.normalize();
+        Point3D reflected_light = main_source.getDirection() - norm_at_hitpoint * 2.0 * (main_source.getDirection().dotProduct(norm_at_hitpoint)); //Reflected from light source, not from viewer
+        reflected_light.normalize();
+        Point3D c = computeLight(sphere_hit, norm_at_hitpoint, reflected_light, viewer, main_source);
 
-    Point3D shadow_ray_dir;
-    shadow_ray_dir = main_source.getDirection() * (-1); //*(-1)? je ne pense pas
-    Ray shadow_ray(pointIntersect + shadow_ray_dir * 0.05, shadow_ray_dir);
-    Object sphere_hit2;
-    Point3D norm_at_hitpoint2;
-    Point3D shadow_ray_intersection = shadow_ray.get_Closest_Intersection(objects_vector, &sphere_hit2, &norm_at_hitpoint2);
-    if (shadow_ray_intersection != shadow_ray.getOrigin())
-        return Point3D(0, 0, 0);
-    // return Point3D((int)(sphere_hit.getSurfaceProperties().colorR+global_ambient_intensity.getX())/2,(int)(sphere_hit.getSurfaceProperties().colorG+global_ambient_intensity.getY())/2,(int)(sphere_hit.getSurfaceProperties().colorB+global_ambient_intensity.getZ())/2);
-    norm_at_hitpoint.normalize();
-    Point3D viewer = (pointIntersect - origin);
-    viewer.normalize();
-    Point3D reflected_light = main_source.getDirection() - norm_at_hitpoint * 2.0 * (main_source.getDirection().dotProduct(norm_at_hitpoint)); //Reflected from light source, not from viewer
-    reflected_light.normalize();
-    Point3D c = computeLight(sphere_hit, norm_at_hitpoint, reflected_light, viewer, main_source);
-    return Point3D((int)checkColorBoundaries(c.getX()), (int)checkColorBoundaries(c.getY()), (int)checkColorBoundaries(c.getZ()));
+        //Shadow_ray calculation
+        Point3D shadow_ray_dir;
+        shadow_ray_dir = main_source.getDirection() * (-1); //*(-1)? je ne pense pas
+        Ray shadow_ray(pointIntersect + shadow_ray_dir * 0.05, shadow_ray_dir);
+        Object sphere_hit2;
+        Point3D norm_at_hitpoint2;
+        Point3D shadow_ray_intersection = shadow_ray.get_Closest_Intersection(objects_vector, &sphere_hit2, &norm_at_hitpoint2);
+        if (shadow_ray_intersection != shadow_ray.getOrigin())
+        {
+            return Point3D(sphere_hit.getSurfaceProperties().colorR/5,sphere_hit.getSurfaceProperties().colorG/5,sphere_hit.getSurfaceProperties().colorB/5);
+        }
+
+        //Reflected_ray calculation
+        if (sphere_hit.getSurfaceProperties().reflexion == 1.0)
+        {
+            Point3D reflected_ray_dir = ray.getDirection() - norm_at_hitpoint * 2.0 * (ray.getDirection().dotProduct(norm_at_hitpoint));
+            Ray reflected_ray = Ray(shadow_ray_intersection + reflected_ray_dir * 0.05, reflected_ray_dir);
+            Point3D res = c * 0.2 + recursiveCompute(reflected_ray, objects_vector, counter + 1) * 0.8;
+            return Point3D((int)checkColorBoundaries(res.getX()), (int)checkColorBoundaries(res.getY()), (int)checkColorBoundaries(res.getZ()));
+        }
+
+        return Point3D((int)checkColorBoundaries(c.getX()), (int)checkColorBoundaries(c.getY()), (int)checkColorBoundaries(c.getZ()));
+        break;
+    }
 }
 // Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector, int counter)
 // {
@@ -163,12 +184,12 @@ int main()
     Point3D originPlan(0, 0, 500);
 
     //Objets de la scène
-    surface surface_sphere = {PLAIN, 200, 0, 0, 1000.0, 1.0, 0.0};
-    surface surface_sphere2 = {PLAIN, 0, 0, 200, 1000.0, 1.0, 0.0};
-    Sphere sphere(surface_sphere, 10, originPlan);
-    Sphere sphere2(surface_sphere2, 15, originPlan + Point3D(150, -150, -350));
+    surface surface_sphere = {PLAIN, 200, 0, 0, 1000.0, 0.0, 0.0};
+    surface surface_sphere2 = {PLAIN, 125, 125, 125, 1000.0, 0.0, 0.0}; //typical reflective ball
+    Sphere sphere(surface_sphere, 30, originPlan + Point3D(150, 150, -30));
+    Sphere sphere2(surface_sphere2, 100, originPlan + Point3D(100, 50, 100));
 
-    surface surface_plan_ground = {PLAIN, 255, 255, 255, 1000, 0.03, 0.0};
+    surface surface_plan_ground = {PLAIN, 255, 255, 255, 1000, 1.0, 0.0};
     Point3D groundPoint(-100, 0, 0);
     Point3D normale_ground(1, 0, 0);
     Plan ground(surface_plan_ground, normale_ground, groundPoint);
@@ -215,7 +236,7 @@ int main()
             // reflected.normalize();
 
             // my_pixel = computeLight(sphere_hit, norm_at_hitpoint, reflected, viewer, main_source);
-            my_pixel = recursiveCompute(ray, myObjs);
+            my_pixel = recursiveCompute(ray, myObjs, 0);
             myImage
                 << my_pixel.getX() << " " << my_pixel.getY() << " " << my_pixel.getZ() << " ";
 
