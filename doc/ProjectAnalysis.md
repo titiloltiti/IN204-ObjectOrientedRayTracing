@@ -49,3 +49,20 @@ Les sources emettent des rayons (en fonction de leur cone directionnel). Lors de
 
 ## Retour sur le projet
 
+### Ce que nous avons achevé
+
+Nous avons réussi à produire un algorithme de calcul de rayons fonctionnel qui nous permet de créer une scène comportant des objets simples (sphères et plans), de calculer le rendu des rayons pour une source lumineuse et d'afficher ce rendu. Nous travaillons encore à l'ajout d'un format XML de fichier d'entrée qui nous permettra de créer facilement des scènes variées. 
+Le calcul des rayons prend en compte la couleur des différents objets, leur brillance et leur reflexivité et nous avons anticipé l'ajout d'objets de formes différentes. Nous calculons récursivement le rendu des rayons pour afficher les ombres et les objets réfléchissants (miroirs).
+Nous avons créé les classes que nous avions anticipées et avons rajouté une classe Point3D nécessaire pour implémenter les autres classes.
+Nous pouvons très facilement ajouter des formes géométriques simples différentes: il suffit d'implémenter la méthode hit() spécifique à chaque objet car les équations dépendent de la géométrie.
+
+### Ce que nous pourrions facilement ajouter
+
+Nous pourrions très facilement et aimerions prendre le temps d'ajouter des formes géométriques simples, notamment les triangles qui pourraient être utilisés à terme pour la triangularisation de tous les objets.
+Nous aimerions également rajouter la prise en charge de la réfraction/transparence par l'algorithme. Nous avons anticipé cet ajout futur dans notre projet, seul le calcul de réfraction reste à implémenter.
+Nous aimerions calculer un rendu pour plusieurs sources lumineuses. Il nous faudrait simplement prendre le temps de créer et gérer une liste des sources lumineuses ce qui semble accessible.
+
+### Ce que nous aimerions rajouter à long terme
+
+A terme, il serait idéal d'implémenter la triangularisation des objets pour pouvoir facilement afficher des objets de formes complexes et créer des scènes hautement réalistes. Il faudrait pour cela trouver un nouveau format de fichier adapté (pour triangulariser les formes complexes) et également paralléliser les calculs. En effet, le découpage en triangles des objets augmenterait beaucoup le nombre de calculs. On pourrait utiliser les bibliothèques MPI ou OpenMP pour paralléliser les calculs, ou les réaliser sur un GPU via OpenCL ou CUDA.
+Une fois ces ajouts implémentés, on pourrait créer un logiciel qui permette de créer des scènes 3D, avec un interface utilisateur efficace.
