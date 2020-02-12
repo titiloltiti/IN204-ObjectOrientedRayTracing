@@ -57,7 +57,7 @@ public:
     surface getSurfaceProperties() { return self_surface; };
 
     // Constructeur par défaut
-    virtual Point3D hit(Point3D ray_origin, Point3D ray_direction)
+    virtual Point3D hit(const Point3D &ray_origin, const Point3D &ray_direction)
     {
 
         std::cerr << "no hit available for base class" << std::endl;
@@ -68,7 +68,7 @@ public:
         std::cerr << "no normal available for basic object" << std::endl;
         return NO_HIT;
     }
-    virtual Point3D getNormale(Point3D pointIntersect)
+    virtual Point3D getNormale(const Point3D &pointIntersect)
     {
         std::cerr << "no normal available for basic object" << std::endl;
         return pointIntersect * 0;
@@ -128,12 +128,12 @@ public:
         return centre;
     };
 
-    Point3D getNormale(const Point3D &intersection) const
+    Point3D getNormale(const Point3D &intersection)
     {
         return intersection - centre;
     }
 
-    Point3D hit(const Point3D &ray_origin, const Point3D &ray_direction) const
+    Point3D hit(const Point3D &ray_origin, const Point3D &ray_direction)
     {
         Point3D l = ray_origin - centre; // o - c
 
