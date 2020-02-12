@@ -80,7 +80,7 @@ Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector)
 
     Point3D shadow_ray_dir;
     shadow_ray_dir = main_source.getDirection() * (-1); //*(-1)? je ne pense pas
-    Ray shadow_ray(pointIntersect, shadow_ray_dir);
+    Ray shadow_ray(pointIntersect+shadow_ray_dir*0.05, shadow_ray_dir);
     Object sphere_hit2;
     Point3D norm_at_hitpoint2;
     Point3D shadow_ray_intersection = shadow_ray.get_Closest_Intersection(objects_vector, &sphere_hit2, &norm_at_hitpoint2);
@@ -165,7 +165,7 @@ int main()
     surface surface_sphere = {PLAIN, 200, 0, 0, 20.0, 1.0, 0.0};
     surface surface_sphere2 = {PLAIN, 0, 0, 200, 20.0, 1.0, 0.0};
     Sphere sphere(surface_sphere, 50, originPlan);
-    Sphere sphere2(surface_sphere2, 150, originPlan + Point3D(150, 0, 0));
+    Sphere sphere2(surface_sphere2, 150, originPlan + Point3D(150, -150, 150));
 
     std::list<Object *> myObjs;
     myObjs.push_back(&sphere);
