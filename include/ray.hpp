@@ -92,21 +92,21 @@ public:
                                      ) const // Spheres atm voir pour faire un template
     {
         /// Parcourir le vecteur, pour chaque objet on demande sa géométrie pour savoir quelle équation vérifier, une fois qu'on a la géométrie, on peut récupérer la position de l'objet et ses caractéristiques pour résoudre l'équation et stocker dans l'array des intersections le(s) points d'intersection du rayon courant avec les formes.
-        Point3D closest_intersection_point(0, 0, 0);
+        Point3D closest_intersection_point = source_position;
         std::list<Object *>::iterator it = objects_vector.begin();
         while (it != objects_vector.end())
         {
             Point3D new_inter = (*it)->hit(source_position, direction);
             if (new_inter != source_position) // Si on hit un truc interessant,
             {
-                if (closest_intersection_point == source_position)
+                if ((new_inter.norm() > 0.5) && (closest_intersection_point == source_position))
                 { // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
                     *sphere_hit = *(*it);
                     *norm_at_hitpoint = (*it)->getNormale(new_inter);
                     closest_intersection_point = new_inter;
 
                 } // Alors c'est sur que c'est lui le plus proche
-                else
+                else if (new_inter.norm() > 0.5)
                 { // Si on a déjà une valeur, on compare
                     Point3D temp = closest_intersection_point.min_dist(new_inter, source_position);
                     if (temp != closest_intersection_point)
