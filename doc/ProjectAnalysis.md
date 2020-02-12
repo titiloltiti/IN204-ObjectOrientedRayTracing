@@ -1,6 +1,6 @@
 # Project Analysis
-This markdown is supposed to sum up our analysis of the project, first ideas and potential project architecture. 
-Here are the main aspects we need to discuss : 
+Ce fichier résume nos idées et premiers projets au premier jour du projet. Il présente ensuite un résumé de l'état final du projet et une comparaison avec ce que nous attendions, et ce que nous pourrions espérer améliorer.
+Voici les aspects initiaux dont nous avons discuté au premier jour du projet :
 * Analyse d'usage (Contexte, fonctions souhaitées par l'utilisateur, interactions, fonctions de base)
 * Analyse fonctionnelle (Blocs fonctionnels, interactions avec l'environnement)
 * Architecture gros grains (Classes principales, modularité/extensibilité, interactions)
@@ -11,11 +11,11 @@ Le logiciel que nous allons créer devra être dans un premier temps utilisé da
 
 ### Fonctions souhaitées
 Le logiciel devra pouvoir fournir une interface utilisateur lui permettant de choisir une scène ou bien des objets à afficher avec le nombre et la couleur des sources lumineuses.
-(Moteurs d'exécution?)
+Il devra pouvoir tourner sur le CPU ou le GPU de l'utilisateur s'il en possède.
 
 ### Interactions 
-Pour la représentation des objets, voir pour utiliser un format de fichier OBJ [Voir ici](https://fr.wikipedia.org/wiki/Objet_3D_(format_de_fichier)) et pour transférer les données entre machine et logiciel, on nous propose d'utiliser XML. Pour accélérer les calculs, on pourrait faire du multithreading avec MPI et utiliser le GPU avec OpenCL (yes).
-Il faudra réfléchir à l'interaction entre machine et logiciel plus en profondeur (je dois avouer ne pas parfaitement comprendre comment nous allons procéder)
+Pour la représentation des objets, on pourra utiliser un format de fichier OBJ [Voir ici](https://fr.wikipedia.org/wiki/Objet_3D_(format_de_fichier)) et pour transférer les données entre machine et logiciel, on nous propose d'utiliser XML. Pour accélérer les calculs, on pourrait faire du multithreading avec MPI ou OpenMP et/ou utiliser le GPU avec OpenCL.
+Il faudra réfléchir à l'interaction entre machine et logiciel plus en profondeur.
 
 ### Fonctions de test de base 
 Verification du format des fichiers utilisés
@@ -46,3 +46,6 @@ Les classes et objets devront pouvoir supporter un ajout de sous classe qui ne p
 
 ### Interactions
 Les sources emettent des rayons (en fonction de leur cone directionnel). Lors de l'intersection d'un rayon avec la surface d'un objet, on calcule le rendu.
+
+## Retour sur le projet
+
