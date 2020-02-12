@@ -1,4 +1,4 @@
-# Project Analysis - [RayTracing](.)
+# Project Analysis - [RayTracing](./projet_informatique_-_oort.pdf)
 Ce fichier résume nos idées et premiers projets au premier jour du projet. Il présente ensuite un résumé de l'avancement final du projet et une comparaison avec ce que nous attendions, et ce que nous pourrions espérer améliorer.
 Voici les aspects initiaux dont nous avons discuté au premier jour du projet :
 * Analyse d'usage (Contexte, fonctions souhaitées par l'utilisateur, interactions, fonctions de base)
