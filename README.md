@@ -6,7 +6,7 @@ This is the repository for our IN204 Object Oriented Ray Tracing project.
 
 ## Présentation
 
-[Ficj=hier de présentation du projet](doc/ProjectAnalysis.md)
+[Fichier de présentation du projet](doc/ProjectAnalysis.md)
 
 ## Getting started
 
