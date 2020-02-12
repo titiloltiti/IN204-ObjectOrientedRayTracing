@@ -64,29 +64,42 @@ int main()
 
     Point3D origin(0, 0, 0);
     Point3D normale(0, 0, -1);
-    Point3D originPlan(0, 0, 500);
+    Point3D originPlan(0, 0, 1000);
 
     // Source(s) de lumière
     Source main_source;
 
     // Plan de fond
-    surface surface_plan = {PLAIN, 10, 30, 10, 1000, 0.03, 0.0};
-    Point3D backgroundPoint(0, 0, 3000);
+    surface surface_plan = {PLAIN, 50, 100, 50, 1000, 0.03, 0.0};
+    Point3D backgroundPoint(0, 0, 10000);
     Plan background(surface_plan, normale, backgroundPoint);
 
+    // Plan de fond
+    surface surface_plan_back = {PLAIN, 0, 0, 0, 1000, 0.03, 0.0};
+    Point3D backPoint(0, 0, 20000);
+    Plan backgroundGlobal(surface_plan_back, normale, backPoint);
+
+    // Sol
+    surface surface_plan_ground = {PLAIN, 255, 255, 0, 1000, 0.03, 0.0};
+    Point3D groundPoint(-5000, 0, 0);
+    Point3D groundNormale(-1, 0, 0);
+    Plan ground(surface_plan_ground, groundNormale, groundPoint);
+
     //Objets de la scène
-    surface surface_sphere = {PLAIN, 200, 0, 0, 20.0, 1.0, 0.0};
-    surface surface_sphere2 = {PLAIN, 0, 0, 200, 20.0, 1.0, 0.0};
-    Sphere sphere(surface_sphere, 300, originPlan);
-    Sphere sphere2(surface_sphere2, 400, Point3D(-100, -100, 700));
+    surface surface_sphere = {PLAIN, 255, 0, 0, 100.0, 1.0, 0.0};
+    surface surface_sphere2 = {PLAIN, 0, 0, 255, 100.0, 1.0, 0.0};
+    Sphere sphere(surface_sphere, 30, originPlan);
+    Sphere sphere2(surface_sphere2, 40, Point3D(-100, -100, 700));
 
     std::list<Object *> myObjs;
     myObjs.push_back(&sphere);
     myObjs.push_back(&sphere2);
-    myObjs.push_back(&background);
+    // myObjs.push_back(&background);
+    myObjs.push_back(&backgroundGlobal);
+    myObjs.push_back(&ground);
 
     // TEST PART
-    std::cout << "Scene propeties : \n"
+    std::cout << "Scene properties : \n"
               << "Sphere 1 : "
               << "Red : " << sphere.getSurfaceProperties().colorR << " Green : " << sphere.getSurfaceProperties().colorG << " Blue : " << sphere.getSurfaceProperties().colorB << "\n"
               << "Sphere 2 : "
@@ -109,7 +122,7 @@ int main()
         myImage << "\n";
         for (int y = -cameraWidth / 2; y <= cameraWidth / 2; y++)
         {
-            Point3D dir(x, y, 50);
+            Point3D dir(x, y, (int)originPlan.getZ());
             Ray ray(origin, dir);
             Object sphere_hit; //It's an object
             Point3D norm_at_hitpoint;
