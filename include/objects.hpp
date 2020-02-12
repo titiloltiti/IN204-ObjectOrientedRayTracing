@@ -57,7 +57,7 @@ public:
     surface getSurfaceProperties() { return self_surface; };
 
     // Constructeur par défaut
-    virtual Point3D hit(const Point3D &ray_origin, const Point3D &ray_direction)
+    virtual Point3D hit(Point3D ray_origin, Point3D ray_direction)
     {
 
         std::cerr << "no hit available for base class" << std::endl;
@@ -68,7 +68,7 @@ public:
         std::cerr << "no normal available for basic object" << std::endl;
         return NO_HIT;
     }
-    virtual Point3D getNormale(const Point3D &pointIntersect)
+    virtual Point3D getNormale(Point3D pointIntersect)
     {
         std::cerr << "no normal available for basic object" << std::endl;
         return pointIntersect * 0;
@@ -128,12 +128,12 @@ public:
         return centre;
     };
 
-    Point3D getNormale(const Point3D &intersection)
+    Point3D getNormale(Point3D intersection)
     {
         return intersection - centre;
     }
 
-    Point3D hit(const Point3D &ray_origin, const Point3D &ray_direction)
+    Point3D hit(Point3D ray_origin, Point3D ray_direction)
     {
         Point3D l = ray_origin - centre; // o - c
 
@@ -148,9 +148,24 @@ public:
             return Point3D(0, 0, 0);
         }
         if (discr == 0)
-            return ray_origin - ray_direction * (b / (2 * a));
+        {
+            if ((b / (2 * a)) < 0)
+                return ray_origin - ray_direction * (b / (2 * a));
+            return Point3D(0, 0, 0);
+        }
         else
-            return (ray_origin - ray_direction * ((b + sqrt(discr)) / (2 * a))).min_dist(ray_origin - ray_direction * ((b - sqrt(discr)) / (2 * a)), ray_origin);
+        {
+            if ((((b + sqrt(discr)) / (2 * a)) < 0) && (((b - sqrt(discr)) / (2 * a)) < 0))
+                return (ray_origin - ray_direction * ((b + sqrt(discr)) / (2 * a))).min_dist(ray_origin - ray_direction * ((b - sqrt(discr)) / (2 * a)), ray_origin);
+            else
+            {
+                if (((b + sqrt(discr)) / (2 * a)) < 0)
+                    return (ray_origin - ray_direction * ((b + sqrt(discr)) / (2 * a)));
+                if (((b - sqrt(discr)) / (2 * a)) < 0)
+                    return (ray_origin - ray_direction * ((b - sqrt(discr)) / (2 * a)));
+            }
+            return Point3D(0, 0, 0);
+        }
     };
 
     void operator=(const Sphere &anotherSphere)
@@ -169,10 +184,10 @@ private:
 
 public:
     Plan() : Object(PLAN), normale{1, 1, 1}, p{0, 0, 0} {};
-    Plan(const Plan &otherPlan) : Object(PLAN), normale(otherPlan.getNormale()), p(otherPlan.getPoint()){};
+    Plan(const Plan &otherPlan) : Object(PLAN), normale(otherPlan.normale), p(otherPlan.p){};
     Plan(const Point3D &n, const Point3D &o) : Object(PLAN), normale(n), p(o){};
     Plan(surface surf, Point3D n, const Point3D &o) : Object(surf, PLAN), normale(n), p(o){};
-    Point3D getNormale() const
+    Point3D getNormale()
     {
         return normale;
     }
@@ -180,17 +195,19 @@ public:
     {
         return p;
     }
-    Point3D getNormale(const Point3D &intersection) override
+    Point3D getNormale(Point3D intersection)
     {
         return normale - intersection * 0;
     }
 
-    Point3D hit(const Point3D &ray_origin, const Point3D &ray_direction)
+    Point3D hit(Point3D ray_origin, Point3D ray_direction)
     {
         float d = -normale.dotProduct(p); //Plane has equation ax+by+cz+d=0 where (a,b,c) is the normal vector and (x,y,z) a point in the plane
 
         float t = (float)-(ray_origin.dotProduct(normale) + d) / normale.dotProduct(ray_direction);
-        return ray_origin + ray_direction * t;
+        if (t > 0)
+            return ray_origin + ray_direction * t;
+        return Point3D(0, 0, 0);
     };
 
     ~Plan(){};

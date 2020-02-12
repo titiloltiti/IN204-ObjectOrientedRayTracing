@@ -82,7 +82,10 @@ public:
     {
         return (p_X * anotherPoint.getX() + p_Y * anotherPoint.getY() + p_Z * anotherPoint.getZ());
     }
-
+    float norm()
+    {
+        return sqrt(p_X * p_X + p_Y * p_Y + p_Z * p_Z);
+    }
     void normalize()
     {
         float norm = sqrt(p_X * p_X + p_Y * p_Y + p_Z * p_Z);
