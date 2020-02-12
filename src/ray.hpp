@@ -22,19 +22,19 @@
 class Ray
 {
 private:
-    const Point3D source_position;
+    const Point3D ray_origin;
     Point3D direction; // C'est un vecteur
 public:
-    Ray() : source_position(0, 0, 0), direction(0, 0, 1){};
-    Ray(const Point3D pos, Point3D dir) : source_position(pos), direction(dir) { direction.normalize(); };
+    Ray() : ray_origin(0, 0, 0), direction(0, 0, 1){};
+    Ray(const Point3D pos, Point3D dir) : ray_origin(pos), direction(dir) { direction.normalize(); };
 
-    explicit Ray(const Point3D pos) : source_position(pos)
+    explicit Ray(const Point3D pos) : ray_origin(pos)
     {
         // On considère que l'oeil de l'observateur est situé au milieu de l'écran avec un peu de recul (initialement)
         /* Ici utiliser l'oeil et la position du rayon sur l'écran pour calculer la direction */
     }
 
-    Ray(const Ray &otherRay) : source_position(otherRay.getOrigin()), direction(otherRay.getDirection()){};
+    Ray(const Ray &otherRay) : ray_origin(otherRay.getOrigin()), direction(otherRay.getDirection()){};
 
     // Destruction
     // ~Ray() {
@@ -43,7 +43,7 @@ public:
 
     Point3D getOrigin() const
     {
-        return source_position;
+        return ray_origin;
     }
     Point3D getDirection() const
     {
@@ -51,7 +51,7 @@ public:
     }
     Point3D positionAtT(float t) const
     {
-        return source_position + direction * t;
+        return ray_origin + direction * t;
     };
 
     // Point3D hit(Object *o)
@@ -67,14 +67,14 @@ public:
     //         return hit(dynamic_cast<Sphere *>(o));
     //         break;
     //     default:
-    //         return source_position;
+    //         return ray_origin;
     //         break;
     //      }
     //  };
     // Point3D hit(Plan p)
     // {
     //     std::cout << "Testing plan " << std::endl;
-    //     Point3D res = source_position;
+    //     Point3D res = ray_origin;
     //     float a = (p).getNormale().getX();
     //     float b = (p).getNormale().getY();
     //     float c = (p).getNormale().getZ();
@@ -89,23 +89,22 @@ public:
     Point3D get_Closest_Intersection(std::list<Object *> objects_vector, Object *sphere_hit, Point3D *norm_at_hitpoint/* , int item size, creer une variable globale qui est incrémentée à la construcction (comme en java) si possible */) // Spheres atm voir pour faire un template
     {
         /// Parcourir le vecteur, pour chaque objet on demande sa géométrie pour savoir quelle équation vérifier, une fois qu'on a la géométrie, on peut récupérer la position de l'objet et ses caractéristiques pour résoudre l'équation et stocker dans l'array des intersections le(s) points d'intersection du rayon courant avec les formes.
-        Point3D closest_intersection_point = source_position;
+        Point3D closest_intersection_point = ray_origin;
         std::list<Object*>::iterator it = objects_vector.begin();
         while (it != objects_vector.end()) 
         {
-            Point3D new_inter = (*it)->hit(source_position,direction);
-            if (new_inter != source_position) // Si on hit un truc interessant,
+            Point3D new_inter = (*it)->hit(ray_origin,direction);
+            if ((new_inter != ray_origin)) // Si on hit un truc interessant,
             {
-                if (closest_intersection_point == source_position)
+                if ((new_inter.norm()>0.5) && (closest_intersection_point == ray_origin))
                 { // Si le plus proche n'a pas encore été update (il est alors tjs égal à son état initial)
                     *sphere_hit = *(*it);
                     *norm_at_hitpoint = (*it)->getNormale(new_inter);
                     closest_intersection_point = new_inter;
-
                 } // Alors c'est sur que c'est lui le plus proche
-                else
-                { // Si on a déjà une valeur, on compare
-                    Point3D temp = closest_intersection_point.min_dist(new_inter, source_position);
+                else if (new_inter.norm()>0.5)
+                { // Si on a déjà une valeur, on  compare
+                    Point3D temp = closest_intersection_point.min_dist(new_inter, ray_origin);
                     if (temp != closest_intersection_point)
                     {
                         *sphere_hit = *(*it);
@@ -117,6 +116,7 @@ public:
             std::advance(it,1);
 
         }
+        // std::cout << sphere_hit->getSurfaceProperties().colorR << std::endl;
         return closest_intersection_point;
     }
     //Illuminations

@@ -70,7 +70,7 @@ public:
     }
     virtual Point3D getNormale(Point3D pointIntersect)
     {
-         std::cerr << "no normal available for basic object" << std::endl;
+        std::cerr << "no normal available for basic object" << std::endl;
         return pointIntersect * 0;
     }
     Object()
@@ -145,9 +145,24 @@ public:
             return Point3D(0, 0, 0);
         }
         if (discr == 0)
-            return ray_origin - ray_direction * (b / (2 * a));
+        {
+            if ((b / (2 * a)) < 0)
+                return ray_origin - ray_direction * (b / (2 * a));
+            return Point3D(0, 0, 0);
+        }
         else
-            return (ray_origin - ray_direction * ((b + sqrt(discr)) / (2 * a))).min_dist(ray_origin - ray_direction * ((b - sqrt(discr)) / (2 * a)), ray_origin);
+        {
+            if ((((b + sqrt(discr)) / (2 * a)) < 0) && (((b - sqrt(discr)) / (2 * a)) < 0))
+                return (ray_origin - ray_direction * ((b + sqrt(discr)) / (2 * a))).min_dist(ray_origin - ray_direction * ((b - sqrt(discr)) / (2 * a)), ray_origin);
+            else
+            {
+                if (((b + sqrt(discr)) / (2 * a)) < 0)
+                    return (ray_origin - ray_direction * ((b + sqrt(discr)) / (2 * a)));
+                if (((b - sqrt(discr)) / (2 * a)) < 0)
+                    return (ray_origin - ray_direction * ((b - sqrt(discr)) / (2 * a)));
+            }
+            return Point3D(0,0,0);
+        }
     };
 
     void operator=(const Sphere &anotherSphere)
@@ -165,10 +180,10 @@ private:
     const Point3D p;
 
 public:
-    Plan() : Object(PLAN), normale{1, 1, 1}, p{0, 0, 0} { };
-    Plan(const Plan &otherPlan) : Object(PLAN), normale(otherPlan.getNormale()), p(otherPlan.getPoint()) {  };
-    Plan(Point3D n, Point3D o) : Object(PLAN), normale(n), p(o) { };
-    Plan(surface surf, Point3D n, Point3D o) : Object(surf,PLAN), normale(n), p(o){};
+    Plan() : Object(PLAN), normale{1, 1, 1}, p{0, 0, 0} {};
+    Plan(const Plan &otherPlan) : Object(PLAN), normale(otherPlan.getNormale()), p(otherPlan.getPoint()){};
+    Plan(Point3D n, Point3D o) : Object(PLAN), normale(n), p(o){};
+    Plan(surface surf, Point3D n, Point3D o) : Object(surf, PLAN), normale(n), p(o){};
     Point3D getNormale() const
     {
         return normale;
@@ -179,7 +194,7 @@ public:
     }
     Point3D getNormale(Point3D intersection) override
     {
-        return normale-intersection*0;
+        return normale - intersection * 0;
     }
 
     Point3D hit(Point3D ray_origin, Point3D ray_direction)
@@ -187,7 +202,9 @@ public:
         float d = -normale.dotProduct(p); //Plane has equation ax+by+cz+d=0 where (a,b,c) is the normal vector and (x,y,z) a point in the plane
 
         float t = (float)-(ray_origin.dotProduct(normale) + d) / normale.dotProduct(ray_direction);
-        return ray_origin + ray_direction * t;
+        if (t > 0)
+            return ray_origin + ray_direction * t;
+        return Point3D(0, 0, 0);
     };
 
     ~Plan(){};
