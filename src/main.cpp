@@ -12,6 +12,8 @@
 #include <fstream>
 #include <list>
 
+int Object::nbObj = 0;
+
 // Plan de fond
 Point3D normale(0, 0, -1);
 surface surface_plan = {PLAIN, 0, 0, 0, 1000, 0.03, 0.0};
@@ -68,16 +70,15 @@ Point3D computeLight(Object object, Point3D norm, Point3D reflected, Point3D vie
     ib = checkColorBoundaries(ib);
     return Point3D((int)ir, (int)ig, (int)ib);
 } // Toujours des sphères pour le moment mais peut etre qu'on peut simplement remplacer sphere et objet
-
 Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector, int counter)
 {
     switch (counter)
     {
+<<<<<<< HEAD
     case 3: //Ray Depth of 3 
-        return global_ambient_intensity;
-        break;
+=======
+    case 3: //Ray Depth of 3
     default:
-        //Color of Object calculation
         Object sphere_hit; // It's actually an object
         Point3D norm_at_hitpoint;
         Point3D pointIntersect = ray.get_Closest_Intersection(objects_vector, &sphere_hit, &norm_at_hitpoint);
@@ -99,6 +100,7 @@ Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector, int counte
         Object sphere_hit2;
         Point3D norm_at_hitpoint2;
         Point3D shadow_ray_intersection = shadow_ray.get_Closest_Intersection(objects_vector, &sphere_hit2, &norm_at_hitpoint2);
+<<<<<<< HEAD
         if (shadow_ray_intersection != shadow_ray.getOrigin())
         {
             return Point3D(sphere_hit.getSurfaceProperties().colorR/5,sphere_hit.getSurfaceProperties().colorG/5,sphere_hit.getSurfaceProperties().colorB/5);
@@ -113,10 +115,51 @@ Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector, int counte
             return Point3D((int)checkColorBoundaries(res.getX()), (int)checkColorBoundaries(res.getY()), (int)checkColorBoundaries(res.getZ()));
         }
 
+=======
+        if ((shadow_ray_intersection != shadow_ray.getOrigin()) && (sphere_hit != sphere_hit2))
+            return Point3D(sphere_hit.getSurfaceProperties().colorR / 5, sphere_hit.getSurfaceProperties().colorG / 5, sphere_hit.getSurfaceProperties().colorB / 5);
+
+        //Reflected_ray calculation
+        if (sphere_hit.getSurfaceProperties().reflexion > 0.0)
+        {
+            Point3D reflected_ray_dir = ray.getDirection() - norm_at_hitpoint * 2.0 * (ray.getDirection().dotProduct(norm_at_hitpoint));
+            Ray reflected_ray = Ray(pointIntersect + reflected_ray_dir * 0.05, reflected_ray_dir);
+            Point3D res = c * (1 - sphere_hit.getSurfaceProperties().reflexion) + recursiveCompute(reflected_ray, objects_vector, counter + 1) * sphere_hit.getSurfaceProperties().reflexion;
+            return Point3D((int)checkColorBoundaries(res.getX()), (int)checkColorBoundaries(res.getY()), (int)checkColorBoundaries(res.getZ()));
+        }
+
+>>>>>>> scene
         return Point3D((int)checkColorBoundaries(c.getX()), (int)checkColorBoundaries(c.getY()), (int)checkColorBoundaries(c.getZ()));
         break;
     }
 }
+// Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector)
+// {
+
+//     Object sphere_hit; //It's an object
+//     Point3D norm_at_hitpoint;
+//     Point3D pointIntersect = ray.get_Closest_Intersection(objects_vector, &sphere_hit, &norm_at_hitpoint);
+
+//     if (pointIntersect == ray.getOrigin())
+//         return Point3D(background.getSurfaceProperties().colorR, background.getSurfaceProperties().colorG, background.getSurfaceProperties().colorB);
+
+//     Point3D shadow_ray_dir;
+//     shadow_ray_dir = main_source.getDirection() * (-1); //*(-1)? je ne pense pas
+//     Ray shadow_ray(pointIntersect + shadow_ray_dir * 0.05, shadow_ray_dir);
+//     Object sphere_hit2;
+//     Point3D norm_at_hitpoint2;
+//     Point3D shadow_ray_intersection = shadow_ray.get_Closest_Intersection(objects_vector, &sphere_hit2, &norm_at_hitpoint2);
+//     if ((shadow_ray_intersection != shadow_ray.getOrigin()) && (sphere_hit != sphere_hit2))
+//         return Point3D(sphere_hit.getSurfaceProperties().colorR / 5, sphere_hit.getSurfaceProperties().colorG / 5, sphere_hit.getSurfaceProperties().colorB / 5);
+//     // return Point3D((int)(sphere_hit.getSurfaceProperties().colorR+global_ambient_intensity.getX())/2,(int)(sphere_hit.getSurfaceProperties().colorG+global_ambient_intensity.getY())/2,(int)(sphere_hit.getSurfaceProperties().colorB+global_ambient_intensity.getZ())/2);
+//     norm_at_hitpoint.normalize();
+//     Point3D viewer = (pointIntersect - origin);
+//     viewer.normalize();
+//     Point3D reflected_light = main_source.getDirection() - norm_at_hitpoint * 2.0 * (main_source.getDirection().dotProduct(norm_at_hitpoint)); //Reflected from light source, not from viewer
+//     reflected_light.normalize();
+//     Point3D c = computeLight(sphere_hit, norm_at_hitpoint, reflected_light, viewer, main_source);
+//     return Point3D((int)checkColorBoundaries(c.getX()), (int)checkColorBoundaries(c.getY()), (int)checkColorBoundaries(c.getZ()));
+// }
 // Point3D recursiveCompute(Ray ray, std::list<Object *> objects_vector, int counter)
 // {
 //     switch (counter)
@@ -184,10 +227,20 @@ int main()
     Point3D originPlan(0, 0, 500);
 
     //Objets de la scène
+<<<<<<< HEAD
     surface surface_sphere = {PLAIN, 200, 0, 0, 1000.0, 0.0, 0.0};
     surface surface_sphere2 = {PLAIN, 125, 125, 125, 1000.0, 0.0, 0.0}; //typical reflective ball
     Sphere sphere(surface_sphere, 30, originPlan + Point3D(150, 150, -30));
     Sphere sphere2(surface_sphere2, 100, originPlan + Point3D(100, 50, 100));
+=======
+    surface surface_sphere = {PLAIN, 255, 0, 0, 1000.0, 0.33, 0.0};
+    surface surface_sphere2 = {PLAIN, 0, 0, 255, 1000.0, 0.33, 0.0};
+    surface surface_sphere3 = {PLAIN, 0, 255, 0, 1000.0, 0.33, 0.0};
+
+    Sphere sphere(surface_sphere, 100, originPlan);
+    Sphere sphere2(surface_sphere2, 450, originPlan + Point3D(150, -150, 800));
+    Sphere sphere3(surface_sphere3, 250, originPlan + Point3D(200, 500, 200));
+>>>>>>> scene
 
     surface surface_plan_ground = {PLAIN, 255, 255, 255, 1000, 1.0, 0.0};
     Point3D groundPoint(-100, 0, 0);
@@ -197,6 +250,7 @@ int main()
     std::list<Object *> myObjs;
     myObjs.push_back(&sphere);
     myObjs.push_back(&sphere2);
+    myObjs.push_back(&sphere3);
     myObjs.push_back(&ground);
 
     // TEST PART

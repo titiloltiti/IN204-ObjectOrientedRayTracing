@@ -3,16 +3,18 @@ CXXFLAGS = -g -Wall -Wextra -Wshadow -ansi -pedantic -std=c++11
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 EXEC = main
 
-all : project
+all : display
 
-project: executable
+display: project
+	display result/image.ppm &
+
+project: exec
 	@echo "Executing binary..."
 	./bin/main
-	display result/image.ppm
 
-executable: src/$(EXEC).cpp
+exec: src/$(EXEC).cpp
 	@echo "Compiling the project..."
-	$(CXX) -fopenmp $(CXXFLAGS) src/$(EXEC).cpp -o bin/$(EXEC)
+	$(CXX) $(CXXFLAGS) src/$(EXEC).cpp -o bin/$(EXEC)
 
 clean: 
 	rm result/*.ppm

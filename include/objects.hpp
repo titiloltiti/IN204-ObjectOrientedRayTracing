@@ -50,6 +50,8 @@ class Object
 protected:
     surface self_surface;
     enum geometry self_geometry;
+    int id;
+    static int nbObj;
 
 public:
     // En tete de fonctions et méthodes
@@ -73,27 +75,38 @@ public:
         std::cerr << "no normal available for basic object" << std::endl;
         return pointIntersect * 0;
     }
+
+    // virtual Point3D operator!=(Point3D pointIntersect)
+
     Object()
     {
         self_surface.text = PLAIN;
         self_surface.reflexion = 0;
         self_surface.transparency = 0;
+        id = nbObj;
+        countObj();
     };
 
     // Constructeur explicite
     explicit Object(surface new_surface)
     {
         self_surface = new_surface;
+        id = nbObj;
+        countObj();
     };
 
     Object(geometry new_geometry)
     {
         self_geometry = new_geometry;
+        id = nbObj;
+        countObj();
     }
     Object(surface new_surface, geometry new_geometry)
     {
         self_surface = new_surface;
         self_geometry = new_geometry;
+        id = nbObj;
+        countObj();
     }
 
     // Recopie
@@ -101,11 +114,22 @@ public:
     Object(const Object &other)
     {
         self_surface = other.self_surface;
+        id = nbObj;
+        countObj();
     };
 
     // Destruction
 
     virtual ~Object(){};
+
+    static void countObj()
+    {
+        nbObj++;
+    }
+    bool operator!=(const Object &anotherObj)
+    {
+        return !(id == anotherObj.id);
+    }
 };
 
 class Sphere : public Object
