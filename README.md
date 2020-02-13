@@ -8,6 +8,9 @@ This is the repository for our IN204 Object Oriented Ray Tracing project.
 
 [Fichier de présentation du projet](doc/ProjectAnalysis.md)
 
+[Sujet](doc/projet_informatique_-_oort.pdf)
+
+
 ## Getting started
 
 ### Prerequisites
@@ -47,5 +50,3 @@ $ make clean
 ## Licence
 
 There is no licence for this project, do whatever you want with it.
-
-[Here](doc/projet_informatique_-_oort.pdf)
